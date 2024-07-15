@@ -6,7 +6,10 @@ const authController = require('../controller/authController')
 router.route('/signup')
       .post(authController.handleSignUp)
 
-// router.route('/signup')
-//       .post(authController.handleSignup)
-      
+ router.route('/sendotp')
+       .post(authController.sendOTP)
+
+ router.route('/verifyotp')
+       .post(authController.verifyOTP)
+
  module.exports=router;     

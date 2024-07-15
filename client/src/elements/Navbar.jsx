@@ -9,7 +9,7 @@ import { styled } from '@mui/material/styles';
 
 const Navbar = () => {
   const NavbarContainer = styled(AppBar)(() => ({
-    backgroundColor: 'rgb(14, 2, 80)',
+    backgroundColor: 'black',
     height: '75px',
   
   }));
@@ -51,7 +51,7 @@ const Navbar = () => {
     textDecoration: 'none',
     color: 'white',
     '&:hover': {
-      color: 'rgb(14, 2, 80)',
+      color: 'black',
       backgroundColor: 'azure',
     },
   });
@@ -69,6 +69,7 @@ const Navbar = () => {
           <Header>
             <Button>
               <LinkStyled to={'/'}>Signup</LinkStyled>
+
             </Button>
           </Header>
         </Toolbar>

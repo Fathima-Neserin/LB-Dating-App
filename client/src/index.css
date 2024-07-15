@@ -1,16 +1,3 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
 
 @media (max-width: 600px) {
   .header {
@@ -35,7 +22,7 @@ code {
 }
 .head2{
   font-family: Georgia, 'Times New Roman', Times, serif;
-  color: white;
+  color: black;
 }
 
 .form-container{
@@ -54,5 +41,36 @@ code {
 
 #btn{
   background-color: black;
-  color: azure;
+  color: white;
+}
+
+#google-btn{
+  background-color: white;
+  color: blue;
+  background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqQTxgK4s6dLvXDjdU2ptgqQE2ty3g2iapSwm6NxGF9ZXkgXg4qqkzGr8FfTiQD0g9afw&usqp=CAU');
+  background-size: 40px 40px; /* Adjust size as needed */
+  background-repeat: no-repeat;
+  background-position: 230px center; /* Adjust position as needed */
+  padding-left: 10px;
+  margin-left: 0;
+}
+
+#phone-btn{
+  background-color: white;
+  color: blue;
+  background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKS8tb9MomxFbSjXF7tWCCN5Q0G6iW9AaePMD-0YL6UsDgOYbUdX93zTJd0Ng9u3lNhlA&usqp=CAU');
+  background-size: 40px 40px; /* Adjust size as needed */
+  background-repeat: no-repeat;
+  background-position: 200px center; /* Adjust position as needed */
+  padding-left: 10px;
+  margin-left: 0;
+}
+.link{
+  color: white;
+}
+
+.otp-form{
+  
+ padding:  22%;
+  
 }

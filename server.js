@@ -4,25 +4,30 @@ const cors=require('cors');
 const path=require('path');
 const bodyParser=require('body-parser');
 const querystring = require('querystring-es3');
-
+const session = require('express-session')
+const passport =require('passport');
+const OAuth2Strategy = require('passport-google-oauth2').Strategy;
+// const twilio = require('twilio');
+require('dotenv').config();
 
 const Connection=require('./config/dbConnection');
+const User = require('./model/User')
 
+const clientId = process.env.clientId
+const clientSecret = process.env.clientSecret
 
-// const bookRoutes=require('./routes/bookRoutes');
-// const userRoutes=require('./routes/userRoutes');
-const authRoutes=require('./routes/authRoutes');
-// const rentedRoutes=require('./routes/rentedRoutes');
+const authRoutes=require('./routes/authRoutes')
 
-
-require('dotenv').config();
 
 const app = new express();
 
 // Cross Origin Resource Sharing
 
-app.use(cors());
-
+app.use(cors({
+    origin: 'http://localhost:3000',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true
+  }));
 // Middleware for logging 
 
 app.use(morgan('dev'));
@@ -40,17 +45,77 @@ app.use(morgan('dev'));
 
 //   app.use(bodyParser.urlencoded({ extended: false }));
 
+// setup session
+
+app.use(session({
+    secret:'fathimanezrin08',
+    resave:false,
+    saveUninitialized:true
+}))
+
+// setup passport
+
+app.use(passport.initialize());
+app.use(passport.session())
+
+passport.use(
+   new  OAuth2Strategy({
+    clientID: clientId,
+    clientSecret: clientSecret,
+    callbackURL: "http://localhost:3001/auth/google/callback",
+    scope: ["profile", "email"]
+    },
+    async(accessToken,refreshToken,profile,done)=>{
+        console.log("profile",profile)
+        try {
+            let user = await User.findOne({googleId:profile.id})
+
+            if(!user){
+                user = new User({
+                    googleId:profile.id,
+                    displayName:profile.displayName,
+                    email:profile.emails[0].value,
+                    image:profile.photos[0].value
+                })
+
+                await user.save();
+            }
+            const userData = {accessToken,googleId:profile.id};
+            return done(null,userData);
+        } catch (error) {
+            return done(error,null)
+        }
+    }
+)
+)
+
+passport.serializeUser((user,done)=>{
+    done(null,user)
+})
+
+passport.deserializeUser((user,done)=>{
+    done(null,user)
+})
+
+// initial google auth login
+app.get('/auth/google',passport.authenticate("google",{scope:["profile","email"]}))
 
 
-
-
+app.get("/auth/google/callback", passport.authenticate("google", {
+    failureRedirect: "http://localhost:3000/signup"
+}), (req, res) => {
+    const user = req.user;
+    const queryParams = new URLSearchParams({
+        accessToken: user.accessToken,
+        googleId: user.googleId
+    }).toString();
+    res.redirect(`http://localhost:3000/dashboard?${queryParams}`);
+});
 
 // Routes
 
-// app.use('/books',bookRoutes);
-// app.use('/user',userRoutes);
-app.use('/auth',authRoutes);
-// app.use('/ReNtEd',rentedRoutes);
+
+app.use('/oauth',authRoutes);
 
 // DB connection
 
@@ -61,13 +126,7 @@ const newConnection = async() =>{
        console.log(error);
        }
 }
-// // serve static files
-// app.use(express.static(path.join(__dirname , './client/build')));
-// app.get('*', function (_, res){
-//     res.sendFile(path.join(__dirname, './client/build/index.html'), function(error){
-//         res.status(500).send(error);
-//     })
-// })
+
 
 const PORT = process.env.PORT 
 

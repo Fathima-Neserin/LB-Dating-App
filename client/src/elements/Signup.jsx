@@ -6,17 +6,33 @@ import { useState } from 'react';
 import axios from 'axios';
 
 
-const SIGNUP_URL=('http://localhost:3001/auth/signup')
+const SIGNUP_URL=('http://localhost:3001/oauth/signup')
+
 
 const Signup = () => {
-   
+
   const navigate=useNavigate();
+
+
+  const signInWithGoogle = () =>{
+    try {
+      window.open("http://localhost:3001/auth/google/callback","_self")
+      console.log("Signup successful");
+
+      
+    } catch (error) {
+      console.error(error)
+    }
+  
+  } 
+
 
   const nameRef= useRef();
   
   const [details,setDetails] = useState({
-    username:'',
-    password:''
+    displayName:'',
+    email:'',
+    phoneNumber:''
   })
 
   useEffect(()=>{
@@ -24,70 +40,78 @@ const Signup = () => {
       nameRef.current.focus();
 
   },[])
-  // const validateEmail = (email) => {
-  //   // Regular expression for basic email validation
-  //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  //   return emailRegex.test(email);
+  const validateEmail = (email) => {
+    // Regular expression for basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(details.email);
 
+  }
+
+
+ 
+  const validatePhoneNumber = (phoneNumber) => {
+    // Regular expression to match +91 followed by exactly 10 digits
+    const regex = /^\+91\d{10}$/;
+    return regex.test(details.phoneNumber);
+  };
+  
+
+  // if (!validatePhoneNumber(details.phoneNumber)) {
+  //   alert("Contact must contain +91 followed by exactly 10 digits");
+  // } else {
+  //   alert("Contact is valid");
+    
   // }
-
-  // const validatePassword = (password) => {
-  //   // Password must be at least 4 characters long and contain only numbers
-  //   const passwordRegex = /^\d{4,}$/;
-  //   return passwordRegex.test(password);
-  // };
- 
-  // const validateContact = (contact) => {
-  //   // Validate that the contact is a valid number and contains exactly 10 digits
-  //   return /^\d{10}$/.test(contact);
-  // };
-
-  const changeHandler = async (e) =>{
-   
-      setDetails({ ...details, [e.target.name]: e.target.value });
-    
-  }
- 
-  const signupHandle = async(e) =>{
-     
+  
+  const changeHandler = (e) => {
+    const { name, value } = e.target;
+    console.log(`Field: ${name}, Value: ${value}`);
+    setDetails((prevDetails) => ({
+      ...prevDetails,
+      [name]: value
+    }));
+  }; 
+  
+  const signinHandle = async (e) => {
     e.preventDefault();
-    
-    // // Validate email before submitting the form
-    // if (!validateEmail(details.email)) {
-    //   alert('Please enter a valid email address.');
-    //   return;
-    // }
-    
-    // if (!validatePassword(details.password)) {
-    //   alert('Password must be at least 4 characters long and contain only numbers.');
-    //   return;
-    // }
-    
-    //    // Validate contact before submitting the form
-    //    if (!validateContact(details.contact)) {
-    //     alert('Contact must contain exactly 10 digits.');
-    //     return;
-    //   }
-      
-    try {
-      const response = await axios.post(SIGNUP_URL,details)
-      if(response.data.message===` ${details.username} ,sign in`){
-        alert(response.data.message)
-        // navigate ('/login')
-      }
-      else{
-        alert('Signup failed')
-      }
 
-    } catch (error) {
-      console.error(error)
+    // Validate email before submitting the form
+    if (!validateEmail(details.email)) {
+      alert('Please enter a valid email address.');
+      return;
     }
-  }
+
+    // Validate contact before submitting the form
+    if (!validatePhoneNumber(details.phoneNumber)) {
+      alert('Include +91 before your mobile number');
+      return;
+    }
+
+    try {
+      const response = await axios.post(SIGNUP_URL, details);
+
+      const accessToken = response?.data?.token;
+      sessionStorage.setItem('Token', accessToken);
+
+      if (response.data.message === `${details.displayName} signed in successfully`) {
+        console.log(response.data.message)
+        alert(response.data.message); // Optionally alert the message from backend
+        navigate('/dashboard'); // Navigate to dashboard upon successful signup
+      } else {
+        alert('Signup failed');
+        navigate('/')
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Signup failed'); // Handle other error cases
+      navigate('/')
+    }
+  };
   
   return (
     <div className='form-container'>
     <br/>
-    <Typography variant='h3' className='head2' >SignUp Form</Typography>
+    <Typography variant='h3' className='head2' style={{textAlign: 'center'}}>SignUp Form</Typography>
     <br></br>
     <div className='styleform'>
   
@@ -96,35 +120,51 @@ const Signup = () => {
         <TextField 
         variant='outlined' 
         fullWidth 
-        label='Username'
+        label='Name'
         required 
         type='text'  
         onChange={changeHandler}
-        value={details.username}
-        name='username'
+        value={details.displayName}
+        name='displayName'
         inputRef={nameRef}/>
         </Grid>
         <Grid item xs={12} sm={12} md={12}>
         <TextField 
         variant='outlined' 
         fullWidth 
-        label='Password' 
+        label='Email' 
         required 
-        type='password'
+        type='email'
         onChange={changeHandler}
-        value={details.password}
-        name='password'
+        value={details.email}
+        name='email'
+        />
+        </Grid>
+       <Grid item xs={12} sm={12} md={12}>
+        <TextField 
+        variant='outlined' 
+        fullWidth 
+        label='Mobile Number' 
+        required
+        type='text'
+        onChange={changeHandler}
+        value={details.phoneNumber}
+        name='phoneNumber'
        
         />
       
-       
+       </Grid>
         </Grid>
-        </Grid>
+        
         <br/><br/>
-        <Button id='btn' variant='filled' fullWidth onClick={signupHandle}>Signup</Button>  
+        <Button id='btn' variant='filled' fullWidth onClick={signinHandle}>Sign in</Button>  
         <br/><br/>
-        <Typography variant='h6'>New user; <Link>Register</Link></Typography>
-       
+        <Typography style={{textAlign:'center', color: 'red'}} variant='h6'>New user; <Link className='link'>Register</Link></Typography>
+
+        <br/>
+        <Button fullWidth id='google-btn' variant='outlined' onClick={signInWithGoogle}>Sign In with Google</Button>
+        <br/><br/>
+       <Link to={'/generate-otp'}><Button fullWidth id='phone-btn' variant='outlined'>Sign in by otp verification</Button></Link>
           </div>
           </div>
           
