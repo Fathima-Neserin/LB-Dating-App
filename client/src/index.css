@@ -30,7 +30,8 @@
   height: 70%;
   margin: 6% 20%;
   padding: 1% 8%;
-  background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRRIfP2R8DyPleqT65YprVFyaMhgQ5sOF56Fw&s');
+  /* background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRRIfP2R8DyPleqT65YprVFyaMhgQ5sOF56Fw&s'); */
+  background-image: url('https://miro.medium.com/v2/resize:fit:2000/0*-wzHGePoV9d8-aOc');
   background-repeat: no-repeat;
   background-size: cover; /* This ensures the image covers the entire area */
   background-position: center; /* This centers the image */
@@ -40,8 +41,8 @@
 }
 
 #btn{
-  background-color: black;
-  color: white;
+  background-color: white;
+  color: blue;
 }
 
 #google-btn{
@@ -66,11 +67,42 @@
   margin-left: 0;
 }
 .link{
-  color: white;
+  color: red;
 }
 
+.link:hover{
+  color: blue;
+}
 .otp-form{
   
  padding:  22%;
   
+}
+
+#reg-form{
+  background-image: url('https://miro.medium.com/v2/resize:fit:768/1*8H1qVFnf2I2pJMbIMcJs3g.jpeg');
+  height: 80%;
+}
+
+#selecter{
+  padding: "16%";
+} 
+
+.radio-group{
+  display: flex;
+  color: white;
+  padding: 7px;
+  margin-left: 20px;
+}
+
+#radio-group{
+  color: white;
+  margin-left: 25px;
+  padding-top: 6px;
+  font-size: larger;
+}
+
+#reg-btn{
+  background-color: black;
+  color: white;
 }

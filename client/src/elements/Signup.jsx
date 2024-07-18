@@ -111,12 +111,12 @@ const Signup = () => {
   return (
     <div className='form-container'>
     <br/>
-    <Typography variant='h3' className='head2' style={{textAlign: 'center'}}>SignUp Form</Typography>
+    <Typography variant='h6' className='head2'>"Discover love and connections that matter.<br/> Sign in and start your journey to finding that special someone."</Typography>
     <br></br>
     <div className='styleform'>
   
     <Grid container spacing={2}>
-      <Grid item xs={12} sm={12} md={12}>
+      <Grid item xs={6} sm={6} md={6}>
         <TextField 
         variant='outlined' 
         fullWidth 
@@ -128,7 +128,7 @@ const Signup = () => {
         name='displayName'
         inputRef={nameRef}/>
         </Grid>
-        <Grid item xs={12} sm={12} md={12}>
+        <Grid item xs={6} sm={6} md={6}>
         <TextField 
         variant='outlined' 
         fullWidth 
@@ -140,7 +140,7 @@ const Signup = () => {
         name='email'
         />
         </Grid>
-       <Grid item xs={12} sm={12} md={12}>
+       <Grid item xs={6} sm={6} md={12}>
         <TextField 
         variant='outlined' 
         fullWidth 
@@ -156,10 +156,10 @@ const Signup = () => {
        </Grid>
         </Grid>
         
+        <br/>
+        <Button id='btn' variant='outlined' fullWidth onClick={signinHandle}>Sign in</Button>  
         <br/><br/>
-        <Button id='btn' variant='filled' fullWidth onClick={signinHandle}>Sign in</Button>  
-        <br/><br/>
-        <Typography style={{textAlign:'center', color: 'red'}} variant='h6'>New user; <Link className='link'>Register</Link></Typography>
+        <Typography style={{textAlign:'center', color: 'black'}} variant='h6'>New user; <Link to={'/register'} className='link'>Register</Link></Typography>
 
         <br/>
         <Button fullWidth id='google-btn' variant='outlined' onClick={signInWithGoogle}>Sign In with Google</Button>

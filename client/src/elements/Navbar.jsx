@@ -47,6 +47,7 @@ const Navbar = () => {
   }));
 
   const LinkStyled = styled(Link)({
+    marginRight: "20%",
     fontFamily: 'Georgia, Times New Roman, Times, serif',
     textDecoration: 'none',
     color: 'white',
@@ -69,6 +70,8 @@ const Navbar = () => {
           <Header>
             <Button>
               <LinkStyled to={'/'}>Signup</LinkStyled>
+              <LinkStyled to={'/register'}>Register</LinkStyled>
+
 
             </Button>
           </Header>

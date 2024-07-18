@@ -43,8 +43,8 @@ const MobNo = () => {
       <Navbar />
       <div className='form-container'>
         <Grid className='otp-form'>
-          <Typography style={{ textAlign: 'left', color: "red" }} variant='h5'>
-            Enter your Mobile Number:
+          <Typography style={{ textAlign: 'left', color: "black" }} variant='h6'>
+            Enter your Mobile Number, to get verified
           </Typography>
           <br /><br />
           <Grid item xs={12} sm={12} md={12}>

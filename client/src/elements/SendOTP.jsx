@@ -205,7 +205,7 @@ export default function OTPInput() {
 
       <div className='otp-form'>
 
-      <Typography style={{textAlign: 'left' ,  color: "red" }} variant='h5'>Enter OTP,sent to your phone;</Typography>
+      <Typography style={{textAlign: 'left' ,  color: "black" }} variant='h6'>We have sent you an OTP. Please check your messages and enter the OTP to verify your account.</Typography>
       <br/><br/>
       <SendOTP separator={<span>-</span>} value={otp} onChange={setOtp} length={6} />
       <br/><br/>
