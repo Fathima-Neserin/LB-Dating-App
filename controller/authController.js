@@ -126,8 +126,84 @@ const verifyOTP = async (req, res) => {
   }
 };
 
+const handleRegister = async(req,res) =>{
+  try{
+  const { 
+
+    displayName ,
+    email ,
+    phoneNumber ,
+    gender,
+    age ,
+    dob ,
+    qualifications ,
+    hobbies ,
+    interests ,
+    profilePhotoUrl ,
+    multipleImagesUrls ,
+    videoUrl ,
+    smokingHabits ,
+    drinkingHabits ,
+    isEmployer ,
+    jobTitle,
+    companyName ,
+    designation ,
+    location ,
+    isJobseeker ,
+    beginner ,
+    intermediate ,
+    expert ,
+    longTerm ,
+    shortTerm
+           
+    } = req.body;
+
+     // Check if user already exists
+     const existingUser = await User.findOne( { email  });
+     if (existingUser) {
+       return res.status(400).json({ error: "User already exists with the given email " });
+     }
+
+
+  const newuser=  await User.create({
+    displayName ,
+    email ,
+    phoneNumber ,
+    gender,
+    age ,
+    dob ,
+    qualifications ,
+    hobbies ,
+    interests ,
+    profilePhotoUrl ,
+    multipleImagesUrls ,
+    videoUrl ,
+    smokingHabits ,
+    drinkingHabits ,
+    isEmployer ,
+    companyName ,
+    designation ,
+    location ,
+    isJobseeker ,
+    jobTitle,
+    beginner ,
+    intermediate ,
+    expert ,
+    longTerm ,
+    shortTerm
+           
+  })
+  await newuser.save();
+   return res.status(200).json({message:"Successfully registration completed!!",newuser})
+}catch(error){
+  console.log(error)
+  return res.status(500).json({error:"Internal server error"})
+}}
+
+
 module.exports = {
   handleSignUp,
   sendOTP,
-  verifyOTP
+  verifyOTP,
+  handleRegister
 };

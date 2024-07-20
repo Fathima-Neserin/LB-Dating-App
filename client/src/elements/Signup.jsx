@@ -32,7 +32,7 @@ const Signup = () => {
   const [details,setDetails] = useState({
     displayName:'',
     email:'',
-    phoneNumber:''
+    phoneNumber:'+91'
   })
 
   useEffect(()=>{

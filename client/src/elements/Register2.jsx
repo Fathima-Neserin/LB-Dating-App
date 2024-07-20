@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Navbar from './Navbar'
 import { Button, Checkbox, Divider, FormControl, FormControlLabel, FormGroup, FormLabel, Radio, RadioGroup, TextField, Typography } from '@mui/material'
 import { Link } from 'react-router-dom';
@@ -8,6 +8,50 @@ const Register2 = () => {
 
   const [isEmployer, setIsEmployer] = useState(false);
   const [isJobseeker, setIsJobseeker] = useState(false);
+  const [companyName, setCompanyName] = useState('');
+  const [designation, setDesignation] = useState('');
+  const [location, setLocation] = useState('');
+  const [jobTitle, setJobTitle] = useState('');
+  const [beginner, setBeginner] = useState(false);
+  const [intermediate,setIntermediate] = useState(false);
+  const [expert, setExpert] = useState(false);
+
+
+  useEffect(() => {
+
+    const savedData = localStorage.getItem('form22Data');
+    if (savedData) {
+
+      const { isEmployer, isJobseeker, companyName, designation, location, jobTitle} = JSON.parse(savedData);
+
+      setIsEmployer(isEmployer);
+      setIsJobseeker(isJobseeker);
+      setCompanyName(companyName);
+      setDesignation(designation);
+      setLocation(location);
+      setJobTitle(jobTitle);
+      setBeginner(beginner);
+      setIntermediate(intermediate);
+      setExpert(expert);
+    }
+  }, []);
+
+  useEffect(() => {
+    const newdata = {
+      isEmployer,
+      isJobseeker,
+      companyName,
+      designation,
+      location,
+      jobTitle,
+      beginner,
+      intermediate,
+      expert
+
+    };
+    localStorage.setItem('form2Data', JSON.stringify(newdata));
+  }, [isEmployer, isJobseeker, companyName, designation, location, jobTitle,beginner,intermediate,expert]);
+
 
   const handleEmployer = (event) => {
     setIsEmployer(event.target.checked);
@@ -40,6 +84,8 @@ const Register2 = () => {
               variant="outlined"
               sx={{ input: {color: 'black', backgroundColor: "white" ,  padding: " 5px " , width: "400px" , height: "50px"  } }}
               InputLabelProps={{ style: { color: 'white' } }}
+              onChange={(e) => setCompanyName(e.target.value)}
+              value={companyName}
             />
             <br/><br/>
             <TextField
@@ -47,6 +93,8 @@ const Register2 = () => {
               variant="outlined"
               sx={{ input: { color: 'black', backgroundColor: "white" , padding: " 5px " , width: "400px" , height: "50px"} }}
               InputLabelProps={{ style: { color: 'white' } }}
+              onChange={(e) => setDesignation(e.target.value)}
+              value={designation}
             />
             <br/><br/>
             <TextField
@@ -54,7 +102,8 @@ const Register2 = () => {
               variant="outlined"
               sx={{ input: {color: 'black', backgroundColor: "white", padding: " 5px " , width: "400px" , height: "50px"  } }}
               InputLabelProps={{ style: { color: 'white' } }}
-              
+              onChange={(e) => setLocation(e.target.value)}
+              value={location}
             />
           </div>
         )}
@@ -65,15 +114,36 @@ const Register2 = () => {
               variant="outlined"
               sx={{ input: {color: 'black', backgroundColor: "white", padding: " 5px " , width: "400px" , height: "50px"  } }}
               InputLabelProps={{ style: { color: 'white' } }}
+              onChange={(e) => setJobTitle(e.target.value)}
+              value={jobTitle}
             />
             <br/><br/>
             <FormControl component="fieldset" sx={{ marginBottom: '10px' }}>
               <FormLabel component="legend" sx={{ color: 'white' , fontSize: "25px" }} >Expertise Level</FormLabel>
               <br/>
               <RadioGroup row aria-label="expertise" name="row-radio-buttons-group">
-                <FormControlLabel value="beginner" control={<Radio sx={{ color: 'white' }} />} label="Beginner" sx={{ color: 'white' }} />
-                <FormControlLabel value="intermediate" control={<Radio sx={{ color: 'white' }} />} label="Intermediate" sx={{ color: 'white' }} />
-                <FormControlLabel value="expert" control={<Radio sx={{ color: 'white' }} />} label="Expert" sx={{ color: 'white' }} />
+                <FormControlLabel 
+                value="beginner" 
+                control={<Radio sx={{ color: 'white' }} />} 
+                label="Beginner" 
+                sx={{ color: 'white' }}   
+                onChange={(e) => setBeginner(e.target.value)} 
+                />
+                <FormControlLabel 
+                value="intermediate" 
+                control={<Radio sx={{ color: 'white' }} />}
+                label="Intermediate" 
+                sx={{ color: 'white' }}
+                onChange={(e) => setIntermediate(e.target.value)}
+               />
+                <FormControlLabel 
+                value="expert" 
+                control={<Radio sx={{ color: 'white' }} />} 
+                label="Expert" 
+                sx={{ color: 'white' }}
+                onChange={(e) => setExpert(e.target.value)}
+                
+               />
               </RadioGroup>
             </FormControl>
           </div>

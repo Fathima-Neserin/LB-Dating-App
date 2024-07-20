@@ -12,4 +12,7 @@ router.route('/signup')
  router.route('/verifyotp')
        .post(authController.verifyOTP)
 
+ router.route('/register')
+       .post(authController.handleRegister)      
+
  module.exports=router;     

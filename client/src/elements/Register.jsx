@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { Typography, InputLabel, MenuItem, FormControl, Select, Box, Chip, RadioGroup, FormControlLabel, Radio, FormLabel, Grid, Input, Button, Divider, TextField } from '@mui/material';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import { useTheme } from '@mui/material/styles';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { textAlign } from '@mui/system';
 
 const ITEM_HEIGHT = 50;
@@ -49,10 +49,14 @@ function getQualification(name, qualification, theme) {
 }
 
 const Register = () => {
-  const [age, setAge] = useState('');
+
+  const navigate = useNavigate();
+
+  const countryCode = '+91';
+  const [age, setAge] = useState();
   const [hobbies, setHobbies] = useState([]);
-  const [interest, setInterest] = useState([]);
-  const [qualification, setQualification] = useState([]);
+  const [interests, setInterest] = useState([]);
+  const [qualifications, setQualification] = useState([]);
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [profilePhotoUrl, setProfilePhotoUrl] = useState(null);
   const [multipleImages, setMultipleImages] = useState([]);
@@ -63,7 +67,11 @@ const Register = () => {
   const [mobileError, setMobileError] = useState(false);
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('')
+  const [phoneNumber, setPhoneNumber] = useState('+91')
+  const [dob, setDOB] = useState(null);
+  const [smokingHabits, setSmokingHabits] = useState(false);
+  const [drinkingHabits, setDrinkingHabits] = useState(false);
+  const [gender, setGender] = useState('')
 
 
   const validateEmail = (email) => {
@@ -73,18 +81,29 @@ const Register = () => {
 
   }
 
-  const validateMobile = (mobile) => {
-    // Check if mobile number includes '+91'
-    return mobile.includes('+91');
-  }
-
   const handleBlur = () => {
     setEmailError(!validateEmail(email));
   };
 
-  const handleMobileBlur = () => {
-    setMobileError(!validateMobile(phoneNumber));
+  const validateMobile = (mobile) => {
+    // Remove country code from the mobile number
+    const numberWithoutCountryCode = mobile.replace(countryCode, '');
+    // Check if the remaining number has exactly 10 digits
+    const isValid = /^\d{10}$/.test(numberWithoutCountryCode);
+    // Set mobileError state based on validation result
+    setMobileError(!isValid);
+    return isValid;
   };
+  
+
+const handleMobileBlur = () => {
+    if (!validateMobile(phoneNumber)) {
+        console.log('Invalid mobile number format');
+    } else {
+        console.log('Valid mobile number:', phoneNumber);
+    }
+};
+ 
 
   const changeHandler = (e) => {
     const { name, value } = e.target;
@@ -164,6 +183,30 @@ const Register = () => {
   };
   const theme = useTheme();
 
+  
+
+  useEffect(() => {
+    const formData = {
+      displayName,
+      email,
+      phoneNumber,
+      gender,
+      age,
+      hobbies,
+      interests,
+      qualifications,
+      dob: dob ? dob.toISOString() : null,  // Convert Date to ISO string
+      smokingHabits,
+      drinkingHabits,
+      profilePhotoUrl,
+      videoUrl,
+      multipleImagesUrls
+    };
+    localStorage.setItem('formData', JSON.stringify(formData));
+  }, [displayName,email,phoneNumber, gender,age,dob, hobbies, interests,qualifications, smokingHabits, drinkingHabits, profilePhotoUrl, multipleImagesUrls, videoUrl]);
+
+ 
+
   return (
     <div className='form-container' id='reg-form'>
       <Typography>
@@ -196,7 +239,7 @@ const Register = () => {
         helperText={emailError ? 'Invalid email format' : ''}
         sx={{ my: 2 ,  m: 1, width: '100%', backgroundColor: 'white'}}
       />
-           <TextField
+       <TextField
         variant='outlined'
         fullWidth
         label='Mobile Number'
@@ -206,10 +249,13 @@ const Register = () => {
         value={phoneNumber}
         name='phoneNumber'
         error={mobileError}
-        helperText={mobileError ? 'Mobile number must include +91' : ''}
+        helperText={mobileError ? <span style={{ color: 'red' }}>Mobile number must contain 10 digits</span> : ''}
         sx={{ my: 2, m: 1, width: '100%', backgroundColor: 'white' }}
         inputProps={{ style: { color: 'black' } }}
-        />
+       
+     />
+         
+
           <FormControl sx={{ m: 1, width: '100%', backgroundColor: 'white' }} variant='outlined'>
             <InputLabel>Age</InputLabel>
             <Select value={age} onChange={handleChange}>
@@ -218,14 +264,15 @@ const Register = () => {
                 <MenuItem key={i} value={i + 18}>{i + 18}</MenuItem>
               ))}
             </Select>
-          </FormControl>
+            </FormControl>
+
+            <br/>
+         
           <FormControl sx={{ m: 1, width: '100%', backgroundColor: 'white' }}>
-            <InputLabel id="demo-multiple-qualification-label">Qualification</InputLabel>
+            <InputLabel >Qualification</InputLabel>
             <Select
-              labelId="demo-multiple-qualification-label"
-              id="demo-multiple-qualification"
               multiple
-              value={qualification}
+              value={qualifications}
               onChange={handleQualification}
               input={<OutlinedInput label="Qualification" />}
               renderValue={(selected) => (
@@ -238,7 +285,7 @@ const Register = () => {
               MenuProps={MenuProps}
             >
               {Qualifications.map((name) => (
-                <MenuItem key={name} value={name} style={getQualification(name, qualification, theme)}>
+                <MenuItem key={name} value={name} style={getQualification(name, qualifications, theme)}>
                   {name}
                 </MenuItem>
               ))}
@@ -273,16 +320,32 @@ const Register = () => {
 
         {/* Right Column */}
         <Grid item xs={6}>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker label="Date of Birth" sx={{ m: 1, backgroundColor: 'white', width: '100%' }} />
-          </LocalizationProvider>
+        <div>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label="Date of Birth"
+                value={dob}
+                onChange={(newValue) => setDOB(newValue)}
+                sx={{m: 1, width: '100%' , backgroundColor: 'white' }}
+              />
+            </LocalizationProvider>
+          </div>
+          <FormControl sx={{ m: 1, width: '100%', backgroundColor: 'white' }} variant='outlined'>
+            <InputLabel>Gender</InputLabel>
+           <Select
+          value={gender}
+          label="Gender"
+          onChange={(e) => setGender(e.target.value)}>
+         <MenuItem value="Men">Men</MenuItem>
+         <MenuItem value="Women">Women</MenuItem>
+    
+         </Select>
+          </FormControl>
           <FormControl sx={{ m: 1, width: '100%', backgroundColor: 'white' }}>
             <InputLabel id="demo-multiple-name-label">Interests</InputLabel>
             <Select
-              labelId="demo-multiple-name-label"
-              id="demo-multiple-name"
               multiple
-              value={interest}
+              value={interests}
               onChange={handleInterest}
               input={<OutlinedInput label="Interests" />}
               renderValue={(selected) => (
@@ -295,7 +358,7 @@ const Register = () => {
               MenuProps={MenuProps}
             >
               {Interests.map((name) => (
-                <MenuItem key={name} value={name} style={getInterests(name, interest, theme)}>
+                <MenuItem key={name} value={name} style={getInterests(name, interests, theme)}>
                   {name}
                 </MenuItem>
               ))}
@@ -319,8 +382,8 @@ const Register = () => {
                 )}
               </FormControl>
             </Grid>
-            <Grid item xs={12}>
-              <FormControl sx={{ m: 1, width: '100%', backgroundColor: 'white' }}>
+            <Grid item xs={6}>
+              <FormControl sx={{ m: 1, width: '210%', backgroundColor: 'white' }}>
                 <Typography sx={{ pt: '10px', pl: 1 }}>Share your Images</Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap'}}>
                   <Input
@@ -365,7 +428,11 @@ const Register = () => {
         <Grid item xs={6}>
           <FormControl>
             <FormLabel id='radio-group'>Smoking Habits</FormLabel>
-            <RadioGroup aria-labelledby="demo-radio-buttons-group-label" name="smoking-habits">
+            <RadioGroup
+              value={smokingHabits}
+              onChange={(e) => setSmokingHabits(e.target.value)} 
+              name="smokingHabits"
+              >
               <div className='radio-group'>
                 <FormControlLabel value="yes" control={<Radio sx={{ color: 'white' }} />} label="Yes" sx={{ color: 'white' }} />
                 <FormControlLabel value="no" control={<Radio sx={{ color: 'white' }} />} label="No" sx={{ color: 'white' }} />
@@ -374,14 +441,18 @@ const Register = () => {
           </FormControl>
           <FormControl>
             <FormLabel id='radio-group'>Drinking Habits</FormLabel>
-            <RadioGroup aria-labelledby="demo-radio-buttons-group-label" name="drinking-habits">
-              <div className='radio-group'>
+            <RadioGroup  
+             value={drinkingHabits}
+             onChange={(e) => setDrinkingHabits(e.target.value)} 
+             name="drinkingHabits">
+            <div className='radio-group'>
                 <FormControlLabel value="yes" control={<Radio sx={{ color: 'white' }} />} label="Yes" sx={{ color: 'white' }} />
                 <FormControlLabel value="no" control={<Radio sx={{ color: 'white' }} />} label="No" sx={{ color: 'white' }} />
               </div>
             </RadioGroup>
           </FormControl>
         </Grid>
+        
         <Grid item xs={6}>
         <FormControl sx={{ m: 1, width: '100%', backgroundColor: 'white' }}>
           <Typography sx={{ pt: '10px', pl: 1 }}>Share your Reel</Typography>
@@ -432,7 +503,7 @@ const Register = () => {
       <br/>
       <Divider/>
       <br/>
-      <Link to={'/reg2'}><Button id='btn' style={{margin: " 5px 350px" }}>Next</Button></Link>
+      <Link to={'/reg2'}><Button id='btn' style={{margin: " 5px 350px" }} >Next</Button></Link>
     </div>
   );
 };

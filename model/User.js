@@ -1,31 +1,39 @@
 const mongoose=require('mongoose');
 
 const userSchema= new mongoose.Schema({ 
-    googleId : {
-        type : String
-    },
-    displayName : {
-        type : String 
-    },
-    email : {
-        type : String
-    },
-    image : {
-        type : String
-    },
-    name : {
-        type : String
-    },
-    password : {
-        type : String
-    },
-    phoneNumber : {
-        type : String
-    },
-    otp : {
-        type: Number
-    }
-},{timestamps:true})
+    
+    googleId      : String,
+    displayName   : String,
+    email         : String,
+    gender        : String,
+    image         : String,
+    password      : String,
+    phoneNumber   : String,
+    otp           : Number,
+    age           : Number,
+    dob           : Date,
+    qualifications: [String],
+    hobbies       : [String],
+    interests     : [String],
+    profilePhotoUrl: String,
+    multipleImagesUrls: [String],
+    videoUrl      : String,
+    smokingHabits : Boolean,
+    drinkingHabits: Boolean,
+    isEmployer    : Boolean,
+    jobTitle      : String,
+    companyName   : String,
+    designation   : String,
+    location      : String,
+    isJobseeker   : Boolean,
+    beginner      : Boolean,
+    intermediate  : Boolean,
+    expert        : Boolean,
+    longTerm      : Boolean,
+    shortTerm     : Boolean
+           
+},
+{timestamps:true})
 
 const userData = mongoose.model('user',userSchema);
 module.exports = userData;
