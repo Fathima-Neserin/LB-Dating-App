@@ -15,6 +15,8 @@ const Register2 = () => {
   const [beginner, setBeginner] = useState(false);
   const [intermediate,setIntermediate] = useState(false);
   const [expert, setExpert] = useState(false);
+  const [expertiseLevel, setExpertiseLevel] = useState('');
+
 
 
   useEffect(() => {
@@ -22,7 +24,7 @@ const Register2 = () => {
     const savedData = localStorage.getItem('form22Data');
     if (savedData) {
 
-      const { isEmployer, isJobseeker, companyName, designation, location, jobTitle} = JSON.parse(savedData);
+      const { isEmployer, isJobseeker, companyName, designation, location, jobTitle,expertiseLevel} = JSON.parse(savedData);
 
       setIsEmployer(isEmployer);
       setIsJobseeker(isJobseeker);
@@ -30,9 +32,7 @@ const Register2 = () => {
       setDesignation(designation);
       setLocation(location);
       setJobTitle(jobTitle);
-      setBeginner(beginner);
-      setIntermediate(intermediate);
-      setExpert(expert);
+      setExpertiseLevel(expertiseLevel);
     }
   }, []);
 
@@ -44,13 +44,11 @@ const Register2 = () => {
       designation,
       location,
       jobTitle,
-      beginner,
-      intermediate,
-      expert
+      expertiseLevel
 
     };
     localStorage.setItem('form2Data', JSON.stringify(newdata));
-  }, [isEmployer, isJobseeker, companyName, designation, location, jobTitle,beginner,intermediate,expert]);
+  }, [isEmployer, isJobseeker, companyName, designation, location, jobTitle,expertiseLevel]);
 
 
   const handleEmployer = (event) => {
@@ -121,29 +119,31 @@ const Register2 = () => {
             <FormControl component="fieldset" sx={{ marginBottom: '10px' }}>
               <FormLabel component="legend" sx={{ color: 'white' , fontSize: "25px" }} >Expertise Level</FormLabel>
               <br/>
-              <RadioGroup row aria-label="expertise" name="row-radio-buttons-group">
-                <FormControlLabel 
-                value="beginner" 
-                control={<Radio sx={{ color: 'white' }} />} 
-                label="Beginner" 
-                sx={{ color: 'white' }}   
-                onChange={(e) => setBeginner(e.target.value)} 
+              <RadioGroup
+                row
+                aria-label="expertise"
+                name="row-radio-buttons-group"
+                value={expertiseLevel}
+                onChange={(e) => setExpertiseLevel(e.target.value)}
+              >
+                <FormControlLabel
+                  value="beginner"
+                  control={<Radio sx={{ color: 'white' }} />}
+                  label="Beginner"
+                  sx={{ color: 'white' }}
                 />
-                <FormControlLabel 
-                value="intermediate" 
-                control={<Radio sx={{ color: 'white' }} />}
-                label="Intermediate" 
-                sx={{ color: 'white' }}
-                onChange={(e) => setIntermediate(e.target.value)}
-               />
-                <FormControlLabel 
-                value="expert" 
-                control={<Radio sx={{ color: 'white' }} />} 
-                label="Expert" 
-                sx={{ color: 'white' }}
-                onChange={(e) => setExpert(e.target.value)}
-                
-               />
+                <FormControlLabel
+                  value="intermediate"
+                  control={<Radio sx={{ color: 'white' }} />}
+                  label="Intermediate"
+                  sx={{ color: 'white' }}
+                />
+                <FormControlLabel
+                  value="expert"
+                  control={<Radio sx={{ color: 'white' }} />}
+                  label="Expert"
+                  sx={{ color: 'white' }}
+                />
               </RadioGroup>
             </FormControl>
           </div>

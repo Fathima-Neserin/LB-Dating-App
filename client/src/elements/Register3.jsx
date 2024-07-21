@@ -46,7 +46,7 @@ const Register3 = () => {
       .then((res) => {
         if (res.data.message === 'Successfully registration completed!!') {
           alert(res.data.message);
-          navigate('/dashboard');
+          navigate('/gender');
         }
       })
       .catch((error) => {

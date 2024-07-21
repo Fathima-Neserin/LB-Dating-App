@@ -150,9 +150,7 @@ const handleRegister = async(req,res) =>{
     designation ,
     location ,
     isJobseeker ,
-    beginner ,
-    intermediate ,
-    expert ,
+    expertiseLevel,
     longTerm ,
     shortTerm
            
@@ -186,9 +184,7 @@ const handleRegister = async(req,res) =>{
     location ,
     isJobseeker ,
     jobTitle,
-    beginner ,
-    intermediate ,
-    expert ,
+    expertiseLevel,
     longTerm ,
     shortTerm
            

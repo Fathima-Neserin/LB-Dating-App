@@ -26,9 +26,10 @@ const userSchema= new mongoose.Schema({
     designation   : String,
     location      : String,
     isJobseeker   : Boolean,
-    beginner      : Boolean,
-    intermediate  : Boolean,
-    expert        : Boolean,
+    expertiseLevel: {
+        type: String,
+        enum: ['','beginner', 'intermediate', 'expert']
+    },
     longTerm      : Boolean,
     shortTerm     : Boolean
            

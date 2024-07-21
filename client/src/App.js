@@ -9,6 +9,8 @@ import MobNo from './elements/MobNo';
 import Register from './elements/Register';
 import Register2 from './elements/Register2';
 import Register3 from './elements/Register3';
+import Gender from './elements/Gender';
+import Home from './components/user/Home';
 
 
 function App() {
@@ -23,6 +25,8 @@ function App() {
     <Route path='/dashboard' element={<Common child={<Dashboard/>}/>} />
     <Route path='/generate-otp' element={<MobNo/>}/>
     <Route path='/verify-otp' element={<SendOTP/>}/>
+    <Route path='/gender' element={<Gender/>}/>
+    <Route path='/userhome' element={<Home/>}/>
 
    </Routes>
    </>

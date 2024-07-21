@@ -181,7 +181,7 @@ export default function OTPInput() {
     .then((res) =>{
       console.log(res.data.message);
       alert(res.data.message);
-      navigate('/dashboard')
+      navigate('/gender')
       
     })
     .catch((error)=>{

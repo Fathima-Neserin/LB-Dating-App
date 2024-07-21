@@ -17,6 +17,7 @@ const clientId = process.env.clientId
 const clientSecret = process.env.clientSecret
 
 const authRoutes=require('./routes/authRoutes')
+const userRoutes=require('./routes/userRoutes')
 
 
 const app = new express();
@@ -109,13 +110,14 @@ app.get("/auth/google/callback", passport.authenticate("google", {
         accessToken: user.accessToken,
         googleId: user.googleId
     }).toString();
-    res.redirect(`http://localhost:3000/dashboard?${queryParams}`);
+    res.redirect(`http://localhost:3000/gender?${queryParams}`);
 });
 
 // Routes
 
 
 app.use('/oauth',authRoutes);
+app.use('/users', userRoutes);
 
 // DB connection
 
