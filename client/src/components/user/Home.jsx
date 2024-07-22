@@ -22,10 +22,19 @@ const Home = (props) => {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:3001/users')
+    const gender = localStorage.getItem('selectedGender') || 'Both';
+    let url = 'http://localhost:3001/users';
+
+    if (gender === 'Men') {
+      url = 'http://localhost:3001/users/gender/Men';
+    } else if (gender === 'Women') {
+      url = 'http://localhost:3001/users/gender/Women';
+    }
+
+    axios.get(url)
       .then((res) => {
         setUsers(res.data);
-        console.log("Fetched all users from MongoDB", res.data);
+        console.log(`Fetched ${gender} users from MongoDB`, res.data);
       })
       .catch((error) => {
         console.log(error);

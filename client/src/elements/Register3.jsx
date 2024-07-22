@@ -9,6 +9,7 @@ const Register3 = () => {
   const [shortTerm, setShortTerm] = useState(false);
   const [longTerm, setLongTerm] = useState(false);
   const [formData, setFormData] = useState({});
+  const [form2Data, setForm2Data] = useState({});
   const [profilePhoto, setProfilePhoto] = useState(null);
   const navigate = useNavigate();
 
@@ -17,10 +18,13 @@ const Register3 = () => {
     if (storedData) {
       setFormData(JSON.parse(storedData));
     }
-
+    const stored2Data = localStorage.getItem('form2Data');
+    if (stored2Data) {
+      setForm2Data(JSON.parse(stored2Data));
+    }
     const storedProfilePhoto = localStorage.getItem('profilePhoto');
     if (storedProfilePhoto) {
-      setProfilePhoto(storedProfilePhoto); // Assume this is a Blob URL
+      setProfilePhoto(storedProfilePhoto);
     }
   }, []);
 
@@ -40,22 +44,58 @@ const Register3 = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    const combinedData = { ...formData, relationship: shortTerm ? 'shortTerm' : 'longTerm' };
+
+    const {
+      displayName,
+      email,
+      phoneNumber,
+      gender,
+      age,
+      dob,
+      qualifications,
+      hobbies,
+      interests,
+      multipleImagesUrls,
+      videoUrl,
+      smokingHabits,
+      drinkingHabits,
+      isEmployer,
+      jobTitle,
+      companyName,
+      designation,
+      location,
+      isJobseeker,
+      expertiseLevel
+    } = formData;
 
     const formDataToSend = new FormData();
-    if (profilePhoto) {
-      try {
-        const response = await fetch(profilePhoto);
-        const blob = await response.blob();
-        formDataToSend.append('profilePhoto', blob, 'profilePhoto.jpg');
-      } catch (error) {
-        console.error('Error fetching profile photo:', error);
-      }
-    }
 
-    Object.keys(combinedData).forEach(key => {
-      formDataToSend.append(key, combinedData[key]);
-    });
+    formDataToSend.append('displayName', displayName);
+    formDataToSend.append('email', email);
+    formDataToSend.append('phoneNumber', phoneNumber);
+    formDataToSend.append('gender', gender);
+    formDataToSend.append('age', age);
+    formDataToSend.append('dob', dob);
+    formDataToSend.append('qualifications', qualifications.join(','));
+    formDataToSend.append('hobbies', hobbies.join(','));
+    formDataToSend.append('interests', interests.join(','));
+    formDataToSend.append('multipleImagesUrls', multipleImagesUrls);
+    formDataToSend.append('videoUrl', videoUrl);
+    formDataToSend.append('smokingHabits', smokingHabits);
+    formDataToSend.append('drinkingHabits', drinkingHabits);
+    formDataToSend.append('isEmployer', isEmployer);
+    formDataToSend.append('jobTitle', jobTitle);
+    formDataToSend.append('companyName', companyName);
+    formDataToSend.append('designation', designation);
+    formDataToSend.append('location', location);
+    formDataToSend.append('isJobseeker', isJobseeker);
+    formDataToSend.append('expertiseLevel', expertiseLevel);
+    formDataToSend.append('longTerm', longTerm);
+    formDataToSend.append('shortTerm', shortTerm);
+
+    if (profilePhoto) {
+      formDataToSend.append('profilePhoto', profilePhoto);
+    }
 
     try {
       const res = await axios.post('http://localhost:3001/oauth/register', formDataToSend, {
@@ -98,7 +138,6 @@ const Register3 = () => {
         <br /><br /><br />
         <Divider />
         <br /><br />
-        
         <Box display='flex' justifyContent='space-between'>
           <Link to={'/reg2'}><Button id='btn'>Back</Button></Link>
           <Button id='reg-btn' onClick={handleRegister}>Register</Button>

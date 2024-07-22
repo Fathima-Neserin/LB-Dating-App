@@ -136,17 +136,21 @@ const handleRegister = async (req, res) => {
       shortTerm
     } = req.body;
 
-    // Check if file is received
-    let profilePhotoUrl = null;
-    if (req.file) {
-      // Assuming you want to use a buffer to upload directly to MongoDB or another service
-      const uniqueName = `${uuidv4()}.png`; // Create a unique file name
-      profilePhotoUrl = `/uploads/${uniqueName}`; // Define the file URL
-      // Here, you can save the file buffer to your storage service, e.g., MongoDB, AWS S3, etc.
-      // Example: saveBufferToStorage(req.file.buffer, uniqueName);
+    const profilePhotoFile = req.file;
+
+    if (profilePhotoFile) {
+      const profilePhoto = {
+        data: profilePhotoFile.buffer,
+        contentType: profilePhotoFile.mimetype,
+        filename: profilePhotoFile.originalname
+      };
     } else {
-      console.log('No file received.');
+      return res.status(400).json({ error: "Profile photo is required" });
     }
+
+    console.log('Received files:', profiePhotoFile);
+
+    
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -162,9 +166,9 @@ const handleRegister = async (req, res) => {
       gender,
       age,
       dob,
-      qualifications,
-      hobbies,
-      interests,
+      qualifications: qualifications.split(','),
+      hobbies: hobbies.split(','),
+      interests: interests.split(','),
       multipleImagesUrls,
       videoUrl,
       smokingHabits,
@@ -178,7 +182,7 @@ const handleRegister = async (req, res) => {
       expertiseLevel,
       longTerm,
       shortTerm,
-      profilePhoto: profilePhotoUrl // Save the URL or path to the profile photo
+      profilePhoto : profilePhotoFile
     });
 
     await newUser.save();

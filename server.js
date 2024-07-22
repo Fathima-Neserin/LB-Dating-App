@@ -46,10 +46,6 @@ app.use(morgan('dev'));
 
 //   app.use(bodyParser.urlencoded({ extended: false }));
 
-// Serve static files from the 'uploads' directory
-app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
-
-
 // setup session
 
 app.use(session({

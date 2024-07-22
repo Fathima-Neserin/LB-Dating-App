@@ -15,7 +15,11 @@ const userSchema= new mongoose.Schema({
     qualifications: [String],
     hobbies       : [String],
     interests     : [String],
-    profilePhoto  :  String,
+    profilePhoto  :  {
+        data: Buffer, 
+        contentType: String, 
+        filename: String 
+    },
     multipleImagesUrls: [String],
     videoUrl      : String,
     smokingHabits : Boolean,

@@ -6,9 +6,13 @@ const authController = require('../controller/authController')
 
 
 // Set up Multer for file uploads
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
-
+const upload = multer({
+      storage: multer.memoryStorage(), 
+      limits: {
+          fileSize: 1024 * 1024 * 10, 
+          fieldSize: 25 * 1024 * 1024 
+      }
+  });
 
 router.route('/signup')
       .post(authController.handleSignUp)
