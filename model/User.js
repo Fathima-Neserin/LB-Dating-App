@@ -15,7 +15,7 @@ const userSchema= new mongoose.Schema({
     qualifications: [String],
     hobbies       : [String],
     interests     : [String],
-    profilePhotoUrl: String,
+    profilePhoto  :  String,
     multipleImagesUrls: [String],
     videoUrl      : String,
     smokingHabits : Boolean,

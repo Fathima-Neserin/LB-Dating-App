@@ -1,7 +1,7 @@
 const express=require('express');
 const morgan=require('morgan');
+const path = require('path');
 const cors=require('cors');
-const path=require('path');
 const bodyParser=require('body-parser');
 const querystring = require('querystring-es3');
 const session = require('express-session')
@@ -45,6 +45,10 @@ app.use(morgan('dev'));
   app.use(bodyParser.json());
 
 //   app.use(bodyParser.urlencoded({ extended: false }));
+
+// Serve static files from the 'uploads' directory
+app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+
 
 // setup session
 

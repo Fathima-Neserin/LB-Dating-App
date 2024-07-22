@@ -9,7 +9,7 @@ const Register3 = () => {
   const [shortTerm, setShortTerm] = useState(false);
   const [longTerm, setLongTerm] = useState(false);
   const [formData, setFormData] = useState({});
-  const [form2Data, setForm2Data] = useState({});
+  const [profilePhoto, setProfilePhoto] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,9 +18,9 @@ const Register3 = () => {
       setFormData(JSON.parse(storedData));
     }
 
-    const stored2Data = localStorage.getItem('form2Data');
-    if (stored2Data) {
-      setForm2Data(JSON.parse(stored2Data));
+    const storedProfilePhoto = localStorage.getItem('profilePhoto');
+    if (storedProfilePhoto) {
+      setProfilePhoto(storedProfilePhoto); // Assume this is a Blob URL
     }
   }, []);
 
@@ -38,22 +38,39 @@ const Register3 = () => {
     }
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    const combinedData = { ...formData, ...form2Data, relationship: shortTerm ? 'shortTerm' : 'longTerm' };
+    const combinedData = { ...formData, relationship: shortTerm ? 'shortTerm' : 'longTerm' };
 
-    axios.post('http://localhost:3001/oauth/register', combinedData)
-      .then((res) => {
-        if (res.data.message === 'Successfully registration completed!!') {
-          alert(res.data.message);
-          navigate('/gender');
+    const formDataToSend = new FormData();
+    if (profilePhoto) {
+      try {
+        const response = await fetch(profilePhoto);
+        const blob = await response.blob();
+        formDataToSend.append('profilePhoto', blob, 'profilePhoto.jpg');
+      } catch (error) {
+        console.error('Error fetching profile photo:', error);
+      }
+    }
+
+    Object.keys(combinedData).forEach(key => {
+      formDataToSend.append(key, combinedData[key]);
+    });
+
+    try {
+      const res = await axios.post('http://localhost:3001/oauth/register', formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
         }
-      })
-      .catch((error) => {
-        console.log(error);
-        alert('Registration failed', error);
-        navigate('/reg3');
       });
+      if (res.data.message === 'Successfully registration completed!!') {
+        alert(res.data.message);
+        navigate('/gender');
+      }
+    } catch (error) {
+      console.error('Error response:', error);
+      alert(`Registration failed: ${error.response ? error.response.data.message : error.message}`);
+    }
   };
 
   return (
@@ -81,6 +98,7 @@ const Register3 = () => {
         <br /><br /><br />
         <Divider />
         <br /><br />
+        
         <Box display='flex' justifyContent='space-between'>
           <Link to={'/reg2'}><Button id='btn'>Back</Button></Link>
           <Button id='reg-btn' onClick={handleRegister}>Register</Button>

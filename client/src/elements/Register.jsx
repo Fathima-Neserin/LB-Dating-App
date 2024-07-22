@@ -6,6 +6,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import { useTheme } from '@mui/material/styles';
 import { Link, useNavigate } from 'react-router-dom';
 import { textAlign } from '@mui/system';
+import axios from 'axios';
 
 const ITEM_HEIGHT = 50;
 const ITEM_PADDING_TOP = 8;
@@ -58,7 +59,7 @@ const Register = () => {
   const [interests, setInterest] = useState([]);
   const [qualifications, setQualification] = useState([]);
   const [profilePhoto, setProfilePhoto] = useState(null);
-  const [profilePhotoUrl, setProfilePhotoUrl] = useState(null);
+  // const [profilePhotoUrl, setProfilePhotoUrl] = useState(null);
   const [multipleImages, setMultipleImages] = useState([]);
   const [multipleImagesUrls, setMultipleImagesUrls] = useState([]);
   const [videoFile, setVideoFile] = useState(null);
@@ -144,14 +145,33 @@ const handleMobileBlur = () => {
     const { target: { value } } = event;
     setQualification(typeof value === 'string' ? value.split(',') : value);
   };
-
-  const handleProfilePhoto = (event) => {
+  const handleProfilePhoto = async (event) => {
     const file = event.target.files[0];
     if (file) {
       setProfilePhoto(file);
-      setProfilePhotoUrl(URL.createObjectURL(file));    }
+  
+      // Store file in local storage (using a URL or file name for simplicity)
+      localStorage.setItem('profilePhoto', URL.createObjectURL(file));
+  
+      const formData = new FormData();
+      formData.append('profilePhoto', file); // Ensure this name matches the backend key
+  ;
+  
+      // try {
+      //   const response = await axios.post('http://localhost:3001/upload', formData, {
+      //     headers: {
+      //       'Content-Type': 'multipart/form-data',
+      //     },
+      //   });
+      //   const fileId = response.data.fileId;
+      //   localStorage.setItem('profilePhotoId', fileId);
+      // } catch (error) {
+      //   console.error('Error uploading file:', error);
+      // }
+    }
   };
-
+  
+  
   const handleUploadClick = () => {
     // Handle file upload logic here, e.g., upload to server
     console.log('Uploading profile photo:', profilePhoto);
@@ -198,12 +218,12 @@ const handleMobileBlur = () => {
       dob: dob ? dob.toISOString() : null,  // Convert Date to ISO string
       smokingHabits,
       drinkingHabits,
-      profilePhotoUrl,
+      profilePhoto,
       videoUrl,
       multipleImagesUrls
     };
     localStorage.setItem('formData', JSON.stringify(formData));
-  }, [displayName,email,phoneNumber, gender,age,dob, hobbies, interests,qualifications, smokingHabits, drinkingHabits, profilePhotoUrl, multipleImagesUrls, videoUrl]);
+  }, [displayName,email,phoneNumber, gender,age,dob, hobbies, interests,qualifications, smokingHabits, drinkingHabits, profilePhoto, multipleImagesUrls, videoUrl]);
 
  
 
@@ -366,21 +386,21 @@ const handleMobileBlur = () => {
           </FormControl>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <FormControl sx={{ m: 1, width: '100%', backgroundColor: 'white' }}>
-                <Typography sx={{ pt: '10px', pl: 1 }}>Profile Photo</Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Input type="file" onChange={handleProfilePhoto} />
-                  <Button onClick={handleUploadClick} variant="contained" color='primary' disabled={!profilePhoto} sx={{ m: 2, p: 2 }}>
-                    Upload
-                  </Button>
+            <FormControl sx={{ m: 1, width: '100%', backgroundColor: 'white' }}>
+              <Typography sx={{ pt: '10px', pl: 1 }}>Profile Photo</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Input type="file" onChange={handleProfilePhoto} />
+                <Button onClick={handleUploadClick} variant="contained" color='primary' disabled={!profilePhoto} sx={{ m: 2, p: 2 }}>
+                  Upload
+                </Button>
+              </Box>
+              {profilePhoto && (
+                <Box sx={{ m: 1, p: 1 }}>
+                  <Typography variant="body2">Selected file:</Typography>
+                  <img src={URL.createObjectURL(profilePhoto)} alt="Profile Photo" style={{ maxWidth: '100px', maxHeight: '100px' }} />
                 </Box>
-                {profilePhotoUrl && (
-                  <Box sx={{ m: 1 , p :1 }}>
-                    <Typography variant="body2">Selected file:</Typography>
-                    <img src={profilePhotoUrl} alt="Profile Photo" style={{ maxWidth: '100px', maxHeight: '100px' }} />
-                  </Box>
-                )}
-              </FormControl>
+              )}
+            </FormControl>
             </Grid>
             <Grid item xs={6}>
               <FormControl sx={{ m: 1, width: '210%', backgroundColor: 'white' }}>
