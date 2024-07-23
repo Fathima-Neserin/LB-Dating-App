@@ -15,6 +15,7 @@ const userSchema= new mongoose.Schema({
     qualifications: [String],
     hobbies       : [String],
     interests     : [String],
+    profilePhotoId: mongoose.Schema.Types.ObjectId, // Reference to the photo
     profilePhoto  :  {
         data: Buffer, 
         contentType: String, 

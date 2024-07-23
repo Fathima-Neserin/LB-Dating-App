@@ -83,19 +83,35 @@ const Register3 = () => {
     formDataToSend.append('videoUrl', videoUrl);
     formDataToSend.append('smokingHabits', smokingHabits);
     formDataToSend.append('drinkingHabits', drinkingHabits);
-    formDataToSend.append('isEmployer', isEmployer);
+    formDataToSend.append('isEmployer', isEmployer === true ? 'true' : 'false');
+    formDataToSend.append('isJobseeker', isJobseeker === true ? 'true' : 'false');  
     formDataToSend.append('jobTitle', jobTitle);
     formDataToSend.append('companyName', companyName);
     formDataToSend.append('designation', designation);
     formDataToSend.append('location', location);
-    formDataToSend.append('isJobseeker', isJobseeker);
-    formDataToSend.append('expertiseLevel', expertiseLevel);
     formDataToSend.append('longTerm', longTerm);
     formDataToSend.append('shortTerm', shortTerm);
+  
+  
+  // Only append expertiseLevel if it's defined
+  
+  if (expertiseLevel) {
+    formDataToSend.append('expertiseLevel', expertiseLevel);
+  }
 
-    if (profilePhoto) {
-      formDataToSend.append('profilePhoto', profilePhoto);
+// Convert blobs to files
+    const blobToFile = (blob, filename) => new File([blob], filename, { type: blob.type });
+    const profilePhotoFile = profilePhoto ? blobToFile(profilePhoto, 'profilePhoto.jpg') : null;
+
+    if (profilePhotoFile) {
+      formDataToSend.append('profilePhoto', profilePhotoFile);
     }
+    
+   
+  // Logging formData contents
+  for (let pair of formDataToSend.entries()) {
+    console.log(pair[0] + ': ' + pair[1]);
+  }
 
     try {
       const res = await axios.post('http://localhost:3001/oauth/register', formDataToSend, {

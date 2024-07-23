@@ -15,11 +15,17 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import axios from 'axios';
 
+// Utility function to convert binary data to base64
+const convertBinaryToBase64 = (binaryData, contentType) => {
+  const base64 = Buffer.from(binaryData).toString('base64');
+  return `data:${contentType};base64,${base64}`;
+};
+
 const Home = (props) => {
   const { loading = false } = props;
-
   const [value, setValue] = useState(0);
   const [users, setUsers] = useState([]);
+  const [loadingPhotos, setLoadingPhotos] = useState(true); // New state for photo loading
 
   useEffect(() => {
     const gender = localStorage.getItem('selectedGender') || 'Both';
@@ -32,12 +38,31 @@ const Home = (props) => {
     }
 
     axios.get(url)
-      .then((res) => {
-        setUsers(res.data);
-        console.log(`Fetched ${gender} users from MongoDB`, res.data);
+      .then(async (res) => {
+        const userPromises = res.data.map(async (user) => {
+          if (user._id) {
+            try {
+              const profilePhotoUrl = `http://localhost:3001/users/user/${user._id}/profile-photo`;
+              const photoResponse = await axios.get(profilePhotoUrl, { responseType: 'json' }); // Adjust responseType if necessary
+              const { base64Image, contentType } = photoResponse.data;
+              const photoBase64 = `data:${contentType};base64,${base64Image}`;
+              return { ...user, profilePhoto: photoBase64 };
+            } catch (error) {
+              console.error('Error fetching profile photo:', error);
+              return { ...user, profilePhoto: 'https://via.placeholder.com/140' }; // Fallback URL
+            }
+          }
+          return { ...user, profilePhoto: 'https://via.placeholder.com/140' }; // Fallback URL
+        });
+
+        const usersWithPhotos = await Promise.all(userPromises);
+        setUsers(usersWithPhotos);
+        setLoadingPhotos(false); // Update loading state
+        console.log(`Fetched ${gender} users from MongoDB`, usersWithPhotos);
       })
       .catch((error) => {
-        console.log(error);
+        console.error('Error fetching users:', error);
+        setLoadingPhotos(false); // Update loading state
       });
   }, []);
 
@@ -73,16 +98,16 @@ const Home = (props) => {
                   title={user.displayName}
                   subheader={user.email}
                 />
-                {loading ? (
+                {loadingPhotos ? (
                   <Skeleton sx={{ height: 140 }} animation="wave" variant="rectangular" />
                 ) : (
                   <CardMedia
                     component="img"
                     height="140"
-                    src={`http://localhost:3001/uploads/${user.profilePhoto || ''}`}
+                    src={user.profilePhoto}
                     alt="Profile Photo"
                     onError={(e) => {
-                      console.log('Image failed to load:', `http://localhost:3001/uploads/${user.profilePhoto || ''}`);
+                      console.log('Image failed to load:', user.profilePhoto);
                       e.target.src = 'https://via.placeholder.com/140'; // Replace with actual fallback URL
                     }}
                   />
@@ -105,13 +130,13 @@ const Home = (props) => {
                         Email: {user.email}
                       </Typography>
                       <Typography variant="body2" color="text.secondary" component="p">
-                        Hobbies: {user.hobbies}
+                        Hobbies: {user.hobbies.join(', ')}
                       </Typography>
                       <Typography variant="body2" color="text.secondary" component="p">
-                        Interests: {user.interests}
+                        Interests: {user.interests.join(', ')}
                       </Typography>
                       <Typography variant="body2" color="text.secondary" component="p">
-                        Qualification: {user.qualifications}
+                        Qualification: {user.qualifications.join(', ')}
                       </Typography>
                     </>
                   )}

@@ -138,8 +138,9 @@ const handleRegister = async (req, res) => {
 
     const profilePhotoFile = req.file;
 
+    let profilePhoto = null;
     if (profilePhotoFile) {
-      const profilePhoto = {
+      profilePhoto = {
         data: profilePhotoFile.buffer,
         contentType: profilePhotoFile.mimetype,
         filename: profilePhotoFile.originalname
@@ -147,8 +148,9 @@ const handleRegister = async (req, res) => {
     } else {
       return res.status(400).json({ error: "Profile photo is required" });
     }
-
-    console.log('Received files:', profiePhotoFile);
+    
+    console.log('Received data:', req.body);
+    console.log('Received files:', profilePhotoFile);
 
     
 
@@ -182,13 +184,13 @@ const handleRegister = async (req, res) => {
       expertiseLevel,
       longTerm,
       shortTerm,
-      profilePhoto : profilePhotoFile
+      profilePhoto
     });
 
     await newUser.save();
     return res.status(200).json({ message: "Successfully registration completed!!", newUser });
   } catch (error) {
-    console.log(error);
+    console.log("Error",error);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
