@@ -14,18 +14,15 @@ import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import axios from 'axios';
-
-// Utility function to convert binary data to base64
-const convertBinaryToBase64 = (binaryData, contentType) => {
-  const base64 = Buffer.from(binaryData).toString('base64');
-  return `data:${contentType};base64,${base64}`;
-};
+import ImageList from '@mui/material/ImageList';
+import ImageListItem from '@mui/material/ImageListItem';
 
 const Home = (props) => {
   const { loading = false } = props;
   const [value, setValue] = useState(0);
   const [users, setUsers] = useState([]);
   const [loadingPhotos, setLoadingPhotos] = useState(true); // New state for photo loading
+  const [profilePhoto, setProfilePhoto] = useState(null);
 
   useEffect(() => {
     const gender = localStorage.getItem('selectedGender') || 'Both';
@@ -43,10 +40,11 @@ const Home = (props) => {
           if (user._id) {
             try {
               const profilePhotoUrl = `http://localhost:3001/users/user/${user._id}/profile-photo`;
-              const photoResponse = await axios.get(profilePhotoUrl, { responseType: 'json' }); // Adjust responseType if necessary
+              const photoResponse = await axios.get(profilePhotoUrl, { responseType: 'json' });
+              // const { photoUrl } = photoResponse.data;
+              // return { ...user, profilePhoto: photoUrl };
               const { base64Image, contentType } = photoResponse.data;
-              const photoBase64 = `data:${contentType};base64,${base64Image}`;
-              return { ...user, profilePhoto: photoBase64 };
+              setProfilePhoto(`data:${contentType};base64,${base64Image}`);
             } catch (error) {
               console.error('Error fetching profile photo:', error);
               return { ...user, profilePhoto: 'https://via.placeholder.com/140' }; // Fallback URL
@@ -104,7 +102,7 @@ const Home = (props) => {
                   <CardMedia
                     component="img"
                     height="140"
-                    src={user.profilePhoto}
+                    image={user.profilePhoto}
                     alt="Profile Photo"
                     onError={(e) => {
                       console.log('Image failed to load:', user.profilePhoto);

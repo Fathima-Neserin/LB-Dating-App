@@ -68,18 +68,12 @@ const getProfilePhoto = async (req, res) => {
         const contentType = user.profilePhoto.contentType || 'image/jpeg';
 
         // Send response with Base64 image data and content type
-        res.setHeader('Content-Type', contentType);
-        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate'); // Prevent caching
-        res.setHeader('Pragma', 'no-cache'); // For HTTP/1.0 compatibility
-        res.setHeader('Expires', '0'); // For HTTP/1.1 compatibility
-
-        res.send({ base64Image, contentType });
+        res.json({ base64Image, contentType });
     } catch (error) {
         console.error('Error fetching profile photo:', error); // Log the error
         res.status(500).send('Internal server error');
     }
 };
-
 
 
 
