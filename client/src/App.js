@@ -11,6 +11,8 @@ import Register2 from './elements/Register2';
 import Register3 from './elements/Register3';
 import Gender from './elements/Gender';
 import Home from './components/user/Home';
+import Unique from './components/user/Unique';
+import Sidebar from './components/user/Sidebar';
 
 
 function App() {
@@ -27,6 +29,8 @@ function App() {
     <Route path='/verify-otp' element={<SendOTP/>}/>
     <Route path='/gender' element={<Gender/>}/>
     <Route path='/userhome' element={<Home/>}/>
+    <Route path='/unique' element={<Unique/>}/>
+    <Route path='/sidebar' element={<Sidebar/>}/>
 
    </Routes>
    </>

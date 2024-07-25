@@ -9,8 +9,6 @@ router.route('/')
 router.route('/gender/:gender')      
       .get(userController.getUsersByGender)
 
-router.route('/user/:id/profile-photo')
-      .get(userController.getProfilePhoto);
 
 
 module.exports = router   

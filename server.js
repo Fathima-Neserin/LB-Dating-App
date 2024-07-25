@@ -119,6 +119,11 @@ app.get("/auth/google/callback", passport.authenticate("google", {
 app.use('/oauth',authRoutes);
 app.use('/users', userRoutes);
 
+
+// Serve static files from the 'uploads' directory
+// Serve static files from the 'uploads' directory inside 'routes'
+app.use('/uploads', express.static(path.join(__dirname, 'routes', 'uploads')));
+
 // DB connection
 
 const newConnection = async() =>{

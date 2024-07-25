@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const twilio = require('twilio');
 const multer = require('multer');
-const { v4: uuidv4 } = require('uuid'); // For unique file naming
+// const { v4: uuidv4 } = require('uuid'); // For unique file naming
 
 const ACCESS_TOKEN = process.env.ACCESS_TOKEN;
 const accountSid = process.env.accountSid;
@@ -14,7 +14,9 @@ const client = new twilio(accountSid, authToken);
 
 // Configure Multer for memory storage
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const upload = multer({ dest: 'uploads/' })
+
+
 
 const handleSignUp = async (req, res) => {
   try {
@@ -38,8 +40,8 @@ const handleSignUp = async (req, res) => {
       return res.status(401).send('User does not have a mobile number');
     }
 
-    const id = user._id.toString();
-    const token = jwt.sign({ displayName: user.displayName, email: user.email, id }, ACCESS_TOKEN);
+    let id = user._id.toString();
+    let token = jwt.sign({ displayName: user.displayName, email: user.email, id }, ACCESS_TOKEN);
 
     return res.status(200).json({
       message: `${displayName} signed in successfully`,
@@ -115,44 +117,37 @@ const handleRegister = async (req, res) => {
       displayName,
       email,
       phoneNumber,
+      location,
       gender,
       age,
-      dob,
+      dob: rawDob,
       qualifications,
       hobbies,
       interests,
-      multipleImagesUrls,
-      videoUrl,
       smokingHabits,
       drinkingHabits,
-      isEmployer,
-      jobTitle,
-      companyName,
-      designation,
-      location,
-      isJobseeker,
-      expertiseLevel,
-      longTerm,
-      shortTerm
+     
     } = req.body;
 
-    const profilePhotoFile = req.file;
-
-    let profilePhoto = null;
-    if (profilePhotoFile) {
-      profilePhoto = {
-        data: profilePhotoFile.buffer,
-        contentType: profilePhotoFile.mimetype,
-        filename: profilePhotoFile.originalname
-      };
-    } else {
-      return res.status(400).json({ error: "Profile photo is required" });
-    }
+   
+    const profilePhoto = req.files['profilePhoto'] ? req.files['profilePhoto'][0].filename : null;
+    const shortReel = req.files['shortReel'] ? req.files['shortReel'][0].filename : null;
+    const multipleImages = req.files['multipleImages'] ? req.files['multipleImages'].map(file => file.filename) : [];
     
-    console.log('Received data:', req.body);
-    console.log('Received files:', profilePhotoFile);
+    console.log(req.body); // Logs other form data
 
-    
+    console.log('Profile Photo:', profilePhoto);
+    console.log('Short Reel:', shortReel);
+    console.log('Multiple Images:', multipleImages);
+  // Validate and sanitize input data
+  let dob = rawDob ? new Date(rawDob) : null;
+
+  if (dob && isNaN(dob.getTime())) {
+    return res.status(400).json({ error: 'Invalid date of birth' });
+  }
+
+  // Convert dob to string format
+  dob = dob ? dob.toISOString() : null;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -166,38 +161,110 @@ const handleRegister = async (req, res) => {
       email,
       phoneNumber,
       gender,
+      location,
       age,
       dob,
       qualifications: qualifications.split(','),
       hobbies: hobbies.split(','),
       interests: interests.split(','),
-      multipleImagesUrls,
-      videoUrl,
+      multipleImages,
+      shortReel,
       smokingHabits,
       drinkingHabits,
-      isEmployer,
-      companyName,
-      designation,
-      location,
-      isJobseeker,
-      jobTitle,
-      expertiseLevel,
-      longTerm,
-      shortTerm,
       profilePhoto
     });
 
     await newUser.save();
-    return res.status(200).json({ message: "Successfully registration completed!!", newUser });
+
+    let id = newUser._id.toString();
+    let token = jwt.sign({ displayName: newUser.displayName, email: newUser.email, id }, ACCESS_TOKEN);
+
+
+    return res.status(200).json({ message: "First part of registration completed",
+      token,
+      id,
+      newUser,
+      profilePhoto,
+      shortReel,
+      multipleImages });
+     
   } catch (error) {
     console.log("Error",error);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
 
+const handleRegister2 = async (req, res) => {
+  try {
+    const {
+      isEmployer,
+      isJobSeeker,
+      companyName,
+      designation,
+      companyLocation,
+      expertiseLevel
+    } = req.body;
+
+    // Assume you have some way to get the user's ID, such as from a JWT token or session
+    const userId = req.userId; // This should be set from the authenticated user's context
+
+    // Validate input
+    if (!userId) {
+      return res.status(400).json({ error: 'User ID is required' });
+    }
+
+    // Find the user by ID
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const editUser = await User.findByIdAndUpdate(userId,req.body,{new:true})
+
+    // Save the updated user document
+    await editUser.save();
+
+    return res.status(200).json({ message: 'Employment details updated successfully', editUser });
+  } catch (error) {
+    console.error('Error updating employment details:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+const handleRegister3 = async (req,res) =>{
+      
+  try {
+    const  { relation } = req.body; 
+
+     // Assume you have some way to get the user's ID, such as from a JWT token or session
+     const userId = req.userId; // This should be set from the authenticated user's context
+
+     // Validate input
+     if (!userId) {
+       return res.status(400).json({ error: 'User ID is required' });
+     }
+ 
+     // Find the user by ID
+     const user = await User.findById(userId);
+     if (!user) {
+       return res.status(404).json({ error: 'User not found' });
+     }
+     const editRelation = await User.findByIdAndUpdate(userId,{relation},{new:true})
+    await editRelation.save();
+    return res.status(200).json({ message: 'Relationship updated successfully', editRelation})
+  } catch (error) {
+    console.error('Error updating relationship: ',error)
+    return res.status(500).json({ error: 'Internal server error' });
+
+  }
+}
+
 module.exports = {
   handleSignUp,
   sendOTP,
   verifyOTP,
-  handleRegister
+  handleRegister,
+  handleRegister2,
+  handleRegister3
+  
 };

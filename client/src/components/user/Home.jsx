@@ -16,9 +16,13 @@ import Grid from '@mui/material/Grid';
 import axios from 'axios';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
+import { Link } from 'react-router-dom';
+import Sidebar from './Sidebar';
 
-const Home = (props) => {
-  const { loading = false } = props;
+
+
+const Home = () => {
+  
   const [value, setValue] = useState(0);
   const [users, setUsers] = useState([]);
   const [loadingPhotos, setLoadingPhotos] = useState(true); // New state for photo loading
@@ -39,18 +43,18 @@ const Home = (props) => {
         const userPromises = res.data.map(async (user) => {
           if (user._id) {
             try {
-              const profilePhotoUrl = `http://localhost:3001/users/user/${user._id}/profile-photo`;
-              const photoResponse = await axios.get(profilePhotoUrl, { responseType: 'json' });
-              // const { photoUrl } = photoResponse.data;
-              // return { ...user, profilePhoto: photoUrl };
-              const { base64Image, contentType } = photoResponse.data;
-              setProfilePhoto(`data:${contentType};base64,${base64Image}`);
+              const profilePhotoUrl = `http://localhost:3001/uploads/${user.profilePhoto}`;
+              console.log('Profile Photo URL:', profilePhotoUrl);
+              return {
+                ...user,
+                profilePhoto: profilePhotoUrl
+              };
             } catch (error) {
-              console.error('Error fetching profile photo:', error);
-              return { ...user, profilePhoto: 'https://via.placeholder.com/140' }; // Fallback URL
+              console.error('Error constructing profile photo URL:', error);
+              return { ...user, profilePhoto: 'https://via.placeholder.com/50' }; // Fallback URL
             }
           }
-          return { ...user, profilePhoto: 'https://via.placeholder.com/140' }; // Fallback URL
+          return { ...user, profilePhoto: 'https://via.placeholder.com/50' }; // Fallback URL
         });
 
         const usersWithPhotos = await Promise.all(userPromises);
@@ -66,80 +70,60 @@ const Home = (props) => {
 
   return (
     <>
-      <Topbar />
-      <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
-        <BottomNavigation
-          showLabels
-          value={value}
-          onChange={(event, newValue) => setValue(newValue)}
-        >
-          <BottomNavigationAction
-            label="Home"
-            icon={<HomeIcon sx={{ color: 'rgb(121, 3, 121)' }} />}
-            style={{ color: 'rgb(121, 3, 121)' }}
-          />
-        </BottomNavigation>
-      </Paper>
+    <div><Topbar/></div>
+     
+      <Sidebar/>
       <div className="card-container">
-        <Grid container spacing={4}>
+        <Grid container spacing={1}>
           {users.map((user, i) => (
-            <Grid item xs={12} sm={6} md={3} key={i}>
-              <Card sx={{ maxWidth: 345, m: 2 }}>
+            <Grid item xs={12} sm={6} md={2} key={i}>
+              <Link to={'/unique'} className='unique-link'>
+              <Card sx={{ maxWidth: 275 , m: 1  }} >
                 <CardHeader
-                  action={
-                    loading ? null : (
-                      <IconButton aria-label="settings">
-                        <MoreVertIcon />
-                      </IconButton>
-                    )
-                  }
+                    style={{
+                      textAlign: "center",
+                      color: 'rgb(121, 3, 121)',
+                      overflow: 'hidden', // Ensures content doesn’t overflow
+                      textOverflow: 'ellipsis', // Adds ellipsis if text overflows
+                      whiteSpace: 'nowrap' // Prevents text from wrapping
+                    }}
                   title={user.displayName}
-                  subheader={user.email}
+                  subheader={user.location}
                 />
-                {loadingPhotos ? (
-                  <Skeleton sx={{ height: 140 }} animation="wave" variant="rectangular" />
-                ) : (
-                  <CardMedia
-                    component="img"
-                    height="140"
-                    image={user.profilePhoto}
+               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '200px', height: '180px', overflow: 'hidden' }}>
+                  <img
+                    height="100"
+                     src={user.profilePhoto}
                     alt="Profile Photo"
+                    style={{
+                      borderRadius: '50%', 
+                      objectFit: 'cover',  
+                      width: '100%',      
+                      height: '80%',
+                      padding: " 2px 25px"  ,
+                      whiteSpace: 'nowrap'    
+                    }}
                     onError={(e) => {
+                      const imageUrl = `http://localhost:3001/uploads/${user.profilePhoto}`;
+                          console.log('Image URL:', imageUrl);
+
                       console.log('Image failed to load:', user.profilePhoto);
-                      e.target.src = 'https://via.placeholder.com/140'; // Replace with actual fallback URL
+                      e.target.src = 'https://via.placeholder.com/50%'; // Replace with actual fallback URL
                     }}
                   />
-                )}
-                <CardContent>
-                  {loading ? (
+              
+                </div>
+                <CardContent style={{textAlign: "center"}} >
+                 
                     <>
-                      <Skeleton animation="wave" height={10} style={{ marginBottom: 6 }} />
-                      <Skeleton animation="wave" height={10} width="80%" />
-                    </>
-                  ) : (
-                    <>
-                      <Typography variant="body2" color="text.secondary" component="p">
-                        Name: {user.displayName}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" component="p">
-                        Age: {user.age}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" component="p">
-                        Email: {user.email}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" component="p">
-                        Hobbies: {user.hobbies.join(', ')}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" component="p">
-                        Interests: {user.interests.join(', ')}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" component="p">
+                      <Typography variant="body2" color="text.secondary" noWrap >
                         Qualification: {user.qualifications.join(', ')}
                       </Typography>
                     </>
-                  )}
+                  
                 </CardContent>
               </Card>
+              </Link>
             </Grid>
           ))}
         </Grid>

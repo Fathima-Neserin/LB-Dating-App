@@ -5,6 +5,7 @@ const userSchema= new mongoose.Schema({
     googleId      : String,
     displayName   : String,
     email         : String,
+    location      : String,
     gender        : String,
     image         : String,
     password      : String,
@@ -16,13 +17,9 @@ const userSchema= new mongoose.Schema({
     hobbies       : [String],
     interests     : [String],
     profilePhotoId: mongoose.Schema.Types.ObjectId, // Reference to the photo
-    profilePhoto  :  {
-        data: Buffer, 
-        contentType: String, 
-        filename: String 
-    },
-    multipleImagesUrls: [String],
-    videoUrl      : String,
+    profilePhoto  :  String,
+    multipleImages: [String],
+    shortReel     : String,
     smokingHabits : Boolean,
     drinkingHabits: Boolean,
     isEmployer    : Boolean,
@@ -35,8 +32,12 @@ const userSchema= new mongoose.Schema({
         type: String,
         enum: ['','beginner', 'intermediate', 'expert']
     },
-    longTerm      : Boolean,
-    shortTerm     : Boolean
+    // longTerm      : String,
+    // shortTerm     : Boolean
+    relation       : {
+        type: String,
+        enum: ['longterm', 'shortterm']
+    }
            
 },
 {timestamps:true})

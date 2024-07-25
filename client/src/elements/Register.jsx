@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
-import { Typography, InputLabel, MenuItem, FormControl, Select, Box, Chip, RadioGroup, FormControlLabel, Radio, FormLabel, Grid, Input, Button, Divider, TextField } from '@mui/material';
+import { Typography, InputLabel, MenuItem, FormControl, Select, Box, Chip, RadioGroup, FormControlLabel, Radio, Grid, Input, Button, TextField, FormLabel, Divider } from '@mui/material';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import { useTheme } from '@mui/material/styles';
-import { Link, useNavigate } from 'react-router-dom';
-import { textAlign } from '@mui/system';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+
+
 
 const ITEM_HEIGHT = 50;
 const ITEM_PADDING_TOP = 8;
@@ -31,6 +32,7 @@ const Qualifications = [
   'High School Diploma or Equivalent (GED)', 'Technical or Vocational Certificate', 'Associate Degree', 'Bachelor\'s Degree', 'Master\'s Degree', 'Doctorate Degree (Ph.D., Ed.D., etc.)', 'Professional Degree (JD, MD, etc.)', 'Certifications and Licenses', 'Trade School Education', 'Military Training', 'Online Courses and MOOCs', 'Language Proficiency Certifications', 'Technical Skills and IT Certifications', 'Soft Skills Training', 'Work Experience and Internships'
 ];
 
+
 function getStyles(name, personName, theme) {
   return {
     fontWeight: Hobbies.indexOf(name) === -1 ? theme.typography.fontWeightRegular : theme.typography.fontWeightMedium,
@@ -49,68 +51,59 @@ function getQualification(name, qualification, theme) {
   };
 }
 
+
+
 const Register = () => {
-
   const navigate = useNavigate();
-
+  const theme = useTheme();
   const countryCode = '+91';
-  const [age, setAge] = useState();
+  const [age, setAge] = useState('');
   const [hobbies, setHobbies] = useState([]);
-  const [interests, setInterest] = useState([]);
-  const [qualifications, setQualification] = useState([]);
+  const [interests, setInterests] = useState([]);
+  const [qualifications, setQualifications] = useState([]);
   const [profilePhoto, setProfilePhoto] = useState(null);
-  // const [profilePhotoUrl, setProfilePhotoUrl] = useState(null);
   const [multipleImages, setMultipleImages] = useState([]);
   const [multipleImagesUrls, setMultipleImagesUrls] = useState([]);
-  const [videoFile, setVideoFile] = useState(null);
-  const [videoUrl, setVideoUrl] = useState('');
+  const [shortReel, setShortReel] = useState(null);
   const [emailError, setEmailError] = useState(false);
   const [mobileError, setMobileError] = useState(false);
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('+91')
+  const [phoneNumber, setPhoneNumber] = useState(countryCode);
   const [dob, setDOB] = useState(null);
   const [smokingHabits, setSmokingHabits] = useState(false);
   const [drinkingHabits, setDrinkingHabits] = useState(false);
-  const [gender, setGender] = useState('')
-
+  const [gender, setGender] = useState('');
+  const [location, setLocation] = useState('');
 
   const validateEmail = (email) => {
-    // Regular expression for basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
-
-  }
+  };
 
   const handleBlur = () => {
     setEmailError(!validateEmail(email));
   };
 
   const validateMobile = (mobile) => {
-    // Remove country code from the mobile number
     const numberWithoutCountryCode = mobile.replace(countryCode, '');
-    // Check if the remaining number has exactly 10 digits
     const isValid = /^\d{10}$/.test(numberWithoutCountryCode);
-    // Set mobileError state based on validation result
     setMobileError(!isValid);
     return isValid;
   };
-  
 
-const handleMobileBlur = () => {
+  const handleMobileBlur = () => {
     if (!validateMobile(phoneNumber)) {
-        console.log('Invalid mobile number format');
+      console.log('Invalid mobile number format');
     } else {
-        console.log('Valid mobile number:', phoneNumber);
+      console.log('Valid mobile number:', phoneNumber);
     }
-};
- 
+  };
 
   const changeHandler = (e) => {
     const { name, value } = e.target;
     console.log(`Field: ${name}, Value: ${value}`);
-  
-    // Update state based on the name of the input field
+
     switch (name) {
       case 'displayName':
         setDisplayName(value);
@@ -125,171 +118,177 @@ const handleMobileBlur = () => {
         break;
     }
   };
-  
 
   const handleChange = (event) => {
     setAge(event.target.value);
   };
 
-  const handleValue = (event) => {
+  const handleHobbies = (event) => {
     const { target: { value } } = event;
     setHobbies(typeof value === 'string' ? value.split(',') : value);
   };
 
   const handleInterest = (event) => {
     const { target: { value } } = event;
-    setInterest(typeof value === 'string' ? value.split(',') : value);
+    setInterests(typeof value === 'string' ? value.split(',') : value);
   };
 
   const handleQualification = (event) => {
     const { target: { value } } = event;
-    setQualification(typeof value === 'string' ? value.split(',') : value);
+    setQualifications(typeof value === 'string' ? value.split(',') : value);
   };
-  const handleProfilePhoto = async (event) => {
+
+  const handleProfilePhoto = (event) => {
     const file = event.target.files[0];
     if (file) {
       setProfilePhoto(file);
-  
-      // Store file in local storage (using a URL or file name for simplicity)
-      localStorage.setItem('profilePhoto', URL.createObjectURL(file));
-  
-      const formData = new FormData();
-      formData.append('profilePhoto', file); // Ensure this name matches the backend key
-  ;
-  
-      // try {
-      //   const response = await axios.post('http://localhost:3001/upload', formData, {
-      //     headers: {
-      //       'Content-Type': 'multipart/form-data',
-      //     },
-      //   });
-      //   const fileId = response.data.fileId;
-      //   localStorage.setItem('profilePhotoId', fileId);
-      // } catch (error) {
-      //   console.error('Error uploading file:', error);
-      // }
     }
   };
-  
-  
+
   const handleUploadClick = () => {
-    // Handle file upload logic here, e.g., upload to server
     console.log('Uploading profile photo:', profilePhoto);
+    // Handle the upload logic here
   };
 
   const handleMultipleImage = (event) => {
     const files = Array.from(event.target.files);
     setMultipleImages(prevImages => [...prevImages, ...files]);
-    
-    const urls = files.map(file => URL.createObjectURL(file));
-    setMultipleImagesUrls(prevUrls => [...prevUrls, ...urls]);
   };
 
   const handleMultipleUpload = () => {
-    // Handle file upload logic here, e.g., upload to server
-    console.log('Uploading profile photo:', profilePhoto);
     console.log('Uploading post images:', multipleImages);
+    // Handle the upload logic here
   };
 
   const handleShortReel = (event) => {
     const file = event.target.files[0];
-    setVideoFile(file);
-    setVideoUrl(URL.createObjectURL(file));
+    setShortReel(file);
   };
 
   const handleShortReelUpload = () => {
-    // Your upload logic for video here
-    console.log(videoFile);
+    console.log(shortReel);
+    // Handle the upload logic here
   };
-  const theme = useTheme();
 
-  
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append('displayName', displayName);
+    formData.append('email', email);
+    formData.append('location', location);
+    formData.append('phoneNumber', phoneNumber);
+    formData.append('age', age);
+    formData.append('qualifications', qualifications);
+    formData.append('hobbies', hobbies);
+    formData.append('smokingHabits', smokingHabits);
+    formData.append('drinkingHabits', drinkingHabits);
+    formData.append('dob', dob);
+    formData.append('gender', gender);
+    formData.append('interests', interests);
+    if(profilePhoto){
+    formData.append('profilePhoto', profilePhoto);
+    }
+    formData.append('shortReel', shortReel);
 
-  useEffect(() => {
-    const formData = {
-      displayName,
-      email,
-      phoneNumber,
-      gender,
-      age,
-      hobbies,
-      interests,
-      qualifications,
-      dob: dob ? dob.toISOString() : null,  // Convert Date to ISO string
-      smokingHabits,
-      drinkingHabits,
-      profilePhoto,
-      videoUrl,
-      multipleImagesUrls
-    };
-    localStorage.setItem('formData', JSON.stringify(formData));
-  }, [displayName,email,phoneNumber, gender,age,dob, hobbies, interests,qualifications, smokingHabits, drinkingHabits, profilePhoto, multipleImagesUrls, videoUrl]);
+    multipleImages.forEach((image) => {
+      formData.append('multipleImages', image);
+    });
 
- 
+    try {
+      const response =  await axios.post('http://localhost:3001/oauth/register', formData, {
+        headers: {
+          method:"POST" ,
+          enctype:"multipart/form-data"
+        },
+      });
+
+      if (response.data.token) {
+        localStorage.setItem('accessToken', response.data.token);
+        localStorage.setItem('accessId', response.data.id);
+      }
+      alert("First part of registration completed");
+      navigate('/reg2');
+    } catch (error) {
+      console.error('Registration failed', error);
+      alert("Registration failed");
+    }
+  };
 
   return (
     <div className='form-container' id='reg-form'>
-      <Typography>
-        "Welcome to our Dating App,<br/> Your journey to finding meaningful connections starts here.<br/> Explore, connect, and discover the magic of meeting someone special. Happy matching!"
-      </Typography>
-      <br /><br />
-      <Grid container spacing={2}>
-        {/* Left Column */}
-        <Grid item xs={6}>
-          <TextField
-            variant='outlined'
-            fullWidth
-            label='Name'
-            type='text'
-            onChange={changeHandler}
-            value={displayName}
-            name='displayName'
-            sx={{ m: 1, width: '100%', backgroundColor: 'white' }}
-          />
-         <TextField
-        variant='outlined'
-        fullWidth
-        label='Email'
-        type='email'
-        onChange={changeHandler}
-        onBlur={handleBlur}
-        value={email}
-        name='email'
-        error={emailError}
-        helperText={emailError ? 'Invalid email format' : ''}
-        sx={{ my: 2 ,  m: 1, width: '100%', backgroundColor: 'white'}}
-      />
-       <TextField
-        variant='outlined'
-        fullWidth
-        label='Mobile Number'
-        type='text'
-        onChange={changeHandler}
-        onBlur={handleMobileBlur}
-        value={phoneNumber}
-        name='phoneNumber'
-        error={mobileError}
-        helperText={mobileError ? <span style={{ color: 'red' }}>Mobile number must contain 10 digits</span> : ''}
-        sx={{ my: 2, m: 1, width: '100%', backgroundColor: 'white' }}
-        inputProps={{ style: { color: 'black' } }}
-       
-     />
-         
-
-          <FormControl sx={{ m: 1, width: '100%', backgroundColor: 'white' }} variant='outlined'>
-            <InputLabel>Age</InputLabel>
-            <Select value={age} onChange={handleChange}>
-              <MenuItem value=""></MenuItem>
-              {Array.from({ length: 18 }, (_, i) => (
-                <MenuItem key={i} value={i + 18}>{i + 18}</MenuItem>
-              ))}
-            </Select>
-            </FormControl>
-
-            <br/>
-         
-          <FormControl sx={{ m: 1, width: '100%', backgroundColor: 'white' }}>
-            <InputLabel >Qualification</InputLabel>
+    <Typography>
+      "Welcome to our Dating App,<br/> Your journey to find meaningful connections starts here.<br/> Explore, connect, and discover the magic of meeting someone special. Happy matching!"
+    </Typography>
+    <br /><br />
+    <Grid container spacing={2}>
+      <Grid item xs={12} sm={12} md={6}>
+        <TextField
+          variant='outlined'
+          fullWidth
+          label='Name'
+          type='text'
+          onChange={changeHandler}
+          value={displayName}
+          name='displayName'
+          sx={{ m: 1, width: '100%', backgroundColor: 'white' }}
+        />
+      </Grid>
+      <Grid item xs={12} sm={12} md={6}>
+        <TextField
+          variant='outlined'
+          fullWidth
+          label='Email'
+          type='email'
+          onChange={changeHandler}
+          onBlur={handleBlur}
+          value={email}
+          name='email'
+          error={emailError}
+          helperText={emailError ? 'Invalid email format' : ''}
+          sx={{ m: 1, width: '100%', backgroundColor: 'white' }}
+        />
+      </Grid>
+      <Grid item xs={12} sm={12} md={6}>
+        <TextField
+          variant='outlined'
+          fullWidth
+          label='Location'
+          type='text'
+          onChange={(e) => setLocation(e.target.value)}
+          value={location}
+          sx={{ m: 1, width: '100%', backgroundColor: 'white' }}
+        />
+      </Grid>
+      <Grid item xs={12} sm={12} md={6}>
+        <TextField
+          variant='outlined'
+          fullWidth
+          label='Mobile Number'
+          type='text'
+          onChange={changeHandler}
+          onBlur={handleMobileBlur}
+          value={phoneNumber}
+          name='phoneNumber'
+          error={mobileError}
+          helperText={mobileError ? <span style={{ color: 'red' }}>Mobile number must contain 10 digits</span> : ''}
+          sx={{ m: 1, width: '100%', backgroundColor: 'white' }}
+          inputProps={{ style: { color: 'black' } }}
+        />
+      </Grid>
+      <Grid item xs={12} sm={12} md={6}>
+        <FormControl sx={{ m: 1, width: '100%', backgroundColor: 'white' }} variant='outlined'>
+          <InputLabel>Age</InputLabel>
+          <Select value={age} onChange={handleChange}>
+            <MenuItem value=""></MenuItem>
+            {Array.from({ length: 18 }, (_, i) => (
+              <MenuItem key={i} value={i + 18}>{i + 18}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Grid>
+      <Grid item xs={12} sm={12} md={6}>
+        <FormControl sx={{ m: 1, width: '100%', backgroundColor: 'white' }}>
+        <InputLabel >Qualification</InputLabel>
             <Select
               multiple
               value={qualifications}
@@ -310,15 +309,17 @@ const handleMobileBlur = () => {
                 </MenuItem>
               ))}
             </Select>
-          </FormControl>
-          <FormControl sx={{ m: 1, width: '100%', backgroundColor: 'white' }}>
-            <InputLabel id="demo-multiple-name-label">Hobbies</InputLabel>
-            <Select
+        </FormControl>
+      </Grid>
+      <Grid item xs={12} sm={12} md={6}>
+        <FormControl sx={{ m: 1, width: '100%', backgroundColor: 'white' }}>
+          <InputLabel>Hobbies</InputLabel>
+          <Select
               labelId="demo-multiple-name-label"
               id="demo-multiple-name"
               multiple
               value={hobbies}
-              onChange={handleValue}
+              onChange={handleHobbies}
               input={<OutlinedInput label="Hobbies" />}
               renderValue={(selected) => (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
@@ -335,35 +336,12 @@ const handleMobileBlur = () => {
                 </MenuItem>
               ))}
             </Select>
-          </FormControl>
-        </Grid>
-
-        {/* Right Column */}
-        <Grid item xs={6}>
-        <div>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                label="Date of Birth"
-                value={dob}
-                onChange={(newValue) => setDOB(newValue)}
-                sx={{m: 1, width: '100%' , backgroundColor: 'white' }}
-              />
-            </LocalizationProvider>
-          </div>
-          <FormControl sx={{ m: 1, width: '100%', backgroundColor: 'white' }} variant='outlined'>
-            <InputLabel>Gender</InputLabel>
-           <Select
-          value={gender}
-          label="Gender"
-          onChange={(e) => setGender(e.target.value)}>
-         <MenuItem value="Men">Men</MenuItem>
-         <MenuItem value="Women">Women</MenuItem>
-    
-         </Select>
-          </FormControl>
-          <FormControl sx={{ m: 1, width: '100%', backgroundColor: 'white' }}>
-            <InputLabel id="demo-multiple-name-label">Interests</InputLabel>
-            <Select
+        </FormControl>
+      </Grid>
+      <Grid item xs={12} sm={12} md={6}>
+        <FormControl sx={{ m: 1, width: '100%', backgroundColor: 'white' }}>
+          <InputLabel>Interests</InputLabel>
+          <Select
               multiple
               value={interests}
               onChange={handleInterest}
@@ -383,10 +361,36 @@ const handleMobileBlur = () => {
                 </MenuItem>
               ))}
             </Select>
+        </FormControl>
+      </Grid>
+     
+      <Grid item xs={12} sm={12} md={6}>
+        <FormControl sx={{ m: 1, width: '100%', backgroundColor: 'white' }}>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              label="Date of Birth"
+              value={dob}
+              onChange={(date) => setDOB(date)}
+              renderInput={(params) => <TextField {...params} />}
+            />
+          </LocalizationProvider>
+        </FormControl>
+      </Grid>
+      <Grid item xs={12} sm={12} md={6}>
+      <FormControl sx={{ m: 1, width: '100%', backgroundColor: 'white' }} variant='outlined'>
+            <InputLabel>Gender</InputLabel>
+           <Select
+          value={gender}
+          label="Gender"
+          onChange={(e) => setGender(e.target.value)}>
+         <MenuItem value="Men">Men</MenuItem>
+         <MenuItem value="Women">Women</MenuItem>
+    
+         </Select>
           </FormControl>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-            <FormControl sx={{ m: 1, width: '100%', backgroundColor: 'white' }}>
+      </Grid>
+      <Grid item xs={12} sm={12} md={6}>
+      <FormControl sx={{ m: 1, width: '100%', backgroundColor: 'white' }}>
               <Typography sx={{ pt: '10px', pl: 1 }}>Profile Photo</Typography>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <Input type="file" onChange={handleProfilePhoto} />
@@ -394,16 +398,13 @@ const handleMobileBlur = () => {
                   Upload
                 </Button>
               </Box>
-              {profilePhoto && (
-                <Box sx={{ m: 1, p: 1 }}>
-                  <Typography variant="body2">Selected file:</Typography>
-                  <img src={URL.createObjectURL(profilePhoto)} alt="Profile Photo" style={{ maxWidth: '100px', maxHeight: '100px' }} />
-                </Box>
-              )}
+             
             </FormControl>
-            </Grid>
-            <Grid item xs={6}>
-              <FormControl sx={{ m: 1, width: '210%', backgroundColor: 'white' }}>
+          
+        
+      </Grid>
+      <Grid item xs={12} sm={12} md={6}>
+      <FormControl sx={{  m: 1 ,width: '100%', backgroundColor: 'white' }}>
                 <Typography sx={{ pt: '10px', pl: 1 }}>Share your Images</Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap'}}>
                   <Input
@@ -430,51 +431,12 @@ const handleMobileBlur = () => {
                   </Button>
                   </Grid>
                 </Box>
-                {multipleImagesUrls.length > 0 && (
-                  <Box sx={{ m: 1 }}>
-                    <Typography variant="body2">Selected files:</Typography>
-                    {multipleImagesUrls.map((url, index) => (
-                      <img key={index} src={url} alt={`Post Image ${index + 1},`} style={{ maxWidth: '100px', maxHeight: '100px', marginRight: '10px' }} />
-                    ))}
-                   </Box> 
-                )}</FormControl>
+               
+                </FormControl>
             
-            </Grid>
-          </Grid>
-        </Grid>
       </Grid>
-
-      <Grid container spacing={2}>
-        <Grid item xs={6}>
-          <FormControl>
-            <FormLabel id='radio-group'>Smoking Habits</FormLabel>
-            <RadioGroup
-              value={smokingHabits}
-              onChange={(e) => setSmokingHabits(e.target.value)} 
-              name="smokingHabits"
-              >
-              <div className='radio-group'>
-                <FormControlLabel value="yes" control={<Radio sx={{ color: 'white' }} />} label="Yes" sx={{ color: 'white' }} />
-                <FormControlLabel value="no" control={<Radio sx={{ color: 'white' }} />} label="No" sx={{ color: 'white' }} />
-              </div>
-            </RadioGroup>
-          </FormControl>
-          <FormControl>
-            <FormLabel id='radio-group'>Drinking Habits</FormLabel>
-            <RadioGroup  
-             value={drinkingHabits}
-             onChange={(e) => setDrinkingHabits(e.target.value)} 
-             name="drinkingHabits">
-            <div className='radio-group'>
-                <FormControlLabel value="yes" control={<Radio sx={{ color: 'white' }} />} label="Yes" sx={{ color: 'white' }} />
-                <FormControlLabel value="no" control={<Radio sx={{ color: 'white' }} />} label="No" sx={{ color: 'white' }} />
-              </div>
-            </RadioGroup>
-          </FormControl>
-        </Grid>
-        
-        <Grid item xs={6}>
-        <FormControl sx={{ m: 1, width: '100%', backgroundColor: 'white' }}>
+      <Grid item xs={4} sm={14} md={6}>
+      <FormControl sx={{ m: 1, width: '100%', backgroundColor: 'white' }}>
           <Typography sx={{ pt: '10px', pl: 1 }}>Share your Reel</Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap'}}>
             <Input
@@ -489,7 +451,7 @@ const handleMobileBlur = () => {
                 Choose File
               </Button>
             </label>
-            {videoFile && (
+            {shortReel && (
               <Typography variant="body2" sx={{ m: 1 }}>
                 1 video selected
               </Typography>
@@ -499,32 +461,53 @@ const handleMobileBlur = () => {
                 variant="contained" 
                 color="primary" 
                 onClick={handleShortReelUpload} 
-                disabled={!videoFile} 
+                disabled={!shortReel} 
                 sx={{ ml: 5, mb: 1, pt: 1, display: 'flex', flexWrap: 'wrap'}}
               >
                 Upload
               </Button>
             </Grid>
           </Box>
-          {videoUrl && (
-            <Box sx={{ m: 1 }}>
-              <Typography variant="body2">Selected video:</Typography>
-              <video 
-                controls
-                src={videoUrl} 
-                alt="Selected Video" 
-                style={{ maxWidth: '300px', maxHeight: '300px', marginRight: '10px' }} 
-              />
-            </Box>
-          )}
+        
         </FormControl>
       </Grid>
+      <Grid item xs={12} sm={12} md={6}>
+      <FormControl>
+            <FormLabel id='radio-group'>Smoking Habits</FormLabel>
+            <RadioGroup
+              value={smokingHabits}
+              onChange={(e) => setSmokingHabits(e.target.value)} 
+              name="smokingHabits"
+              >
+              <div className='radio-group'>
+                <FormControlLabel value="yes" control={<Radio sx={{ color: 'white' }} />} label="Yes" sx={{ color: 'white' }} />
+                <FormControlLabel value="no" control={<Radio sx={{ color: 'white' }} />} label="No" sx={{ color: 'white' }} />
+              </div>
+            </RadioGroup>
+          </FormControl>
+        
+          <FormControl>
+            <FormLabel id='radio-group'>Drinking Habits</FormLabel>
+            <RadioGroup  
+             value={drinkingHabits}
+             onChange={(e) => setDrinkingHabits(e.target.value)} 
+             name="drinkingHabits">
+            <div className='radio-group'>
+                <FormControlLabel value="yes" control={<Radio sx={{ color: 'white' }} />} label="Yes" sx={{ color: 'white' }} />
+                <FormControlLabel value="no" control={<Radio sx={{ color: 'white' }} />} label="No" sx={{ color: 'white' }} />
+              </div>
+            </RadioGroup>
+          </FormControl>
       </Grid>
-      <br/>
+      </Grid>
+      <br/><br/>
       <Divider/>
       <br/>
-      <Link to={'/reg2'}><Button id='btn' style={{margin: " 5px 350px" }} >Next</Button></Link>
-    </div>
+        <Button id='btn' style={{marginLeft: '350px'}} onClick={handleRegister} >
+          Submit
+        </Button>
+    
+  </div>
   );
 };
 

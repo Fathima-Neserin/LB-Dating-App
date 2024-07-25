@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import Navbar from './Navbar'
 import { Button, Checkbox, Divider, FormControl, FormControlLabel, FormGroup, FormLabel, Radio, RadioGroup, TextField, Typography } from '@mui/material'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Box } from '@mui/system';
+import axios from 'axios';
 
 const Register2 = () => {
 
@@ -10,46 +11,11 @@ const Register2 = () => {
   const [isJobseeker, setIsJobseeker] = useState(false);
   const [companyName, setCompanyName] = useState('');
   const [designation, setDesignation] = useState('');
-  const [location, setLocation] = useState('');
+  const [companyLocation, setCompanyLocation] = useState('');
   const [jobTitle, setJobTitle] = useState('');
-  const [beginner, setBeginner] = useState(false);
-  const [intermediate,setIntermediate] = useState(false);
-  const [expert, setExpert] = useState(false);
   const [expertiseLevel, setExpertiseLevel] = useState('');
 
-
-
-  useEffect(() => {
-
-    const savedData = localStorage.getItem('form22Data');
-    if (savedData) {
-
-      const { isEmployer, isJobseeker, companyName, designation, location, jobTitle,expertiseLevel} = JSON.parse(savedData);
-
-      setIsEmployer(isEmployer);
-      setIsJobseeker(isJobseeker);
-      setCompanyName(companyName);
-      setDesignation(designation);
-      setLocation(location);
-      setJobTitle(jobTitle);
-      setExpertiseLevel(expertiseLevel);
-    }
-  }, []);
-
-  useEffect(() => {
-    const newdata = {
-      isEmployer,
-      isJobseeker,
-      companyName,
-      designation,
-      location,
-      jobTitle,
-      expertiseLevel
-
-    };
-    localStorage.setItem('form2Data', JSON.stringify(newdata));
-  }, [isEmployer, isJobseeker, companyName, designation, location, jobTitle,expertiseLevel]);
-
+  const navigate = useNavigate();
 
   const handleEmployer = (event) => {
     setIsEmployer(event.target.checked);
@@ -59,6 +25,40 @@ const Register2 = () => {
     setIsJobseeker(event.target.checked);
     if (event.target.checked) {
       setIsEmployer(false);
+    }
+  };
+
+  const handleRegister2 = async (e) =>{
+    e.preventDefault();
+
+    const form2Data = {
+      isEmployer,
+      isJobseeker,
+      companyName,
+      designation,
+      companyLocation,
+      jobTitle,
+      expertiseLevel
+    }
+    
+    const accessToken = localStorage.getItem('accessToken'); // Get the token from local storage
+    const accessId = localStorage.getItem('accessId'); // Get the user ID from local storage
+
+
+    try {
+      const response = await axios.put('http://localhost:3001/oauth/register3',{
+        ...form2Data,
+        userId: accessId // Include the user ID in the request payload);
+      })
+      if (response.data.message === "Employment details updated successfully") {
+        alert(response.data.message);
+        navigate('/reg3');
+      } else {
+        alert('Unexpected response from the server.');
+      }
+    } catch (error) {
+      console.error('Error occurred:', error);
+      alert('Error occurred while updating employment details.');
     }
   };
 
@@ -100,8 +100,8 @@ const Register2 = () => {
               variant="outlined"
               sx={{ input: {color: 'black', backgroundColor: "white", padding: " 5px " , width: "400px" , height: "50px"  } }}
               InputLabelProps={{ style: { color: 'white' } }}
-              onChange={(e) => setLocation(e.target.value)}
-              value={location}
+              onChange={(e) => setCompanyLocation(e.target.value)}
+              value={companyLocation}
             />
           </div>
         )}
@@ -151,10 +151,8 @@ const Register2 = () => {
         <br/><br/><br/><br/>
         <Divider/>
         <br/><br/>
-        <Box display="flex" justifyContent="space-between">
-          <Link to={'/register'}><Button id='btn'>Back</Button></Link>
-          <Link to={'/reg3'}><Button id='btn'>Next</Button></Link>
-        </Box>
+          <Button id='btn' style={{marginLeft: '350px'}} onClick={handleRegister2}>Submit</Button>
+        
     </div>
     
     

@@ -35,51 +35,10 @@ const getUsersByGender = async (req, res) => {
     }
 };
 
-// const getFileFromMongoDB = async (fileId) => {
-//     const GridFSBucket = require('mongodb').GridFSBucket;
-//     const mongoose = require('mongoose');
-//     const conn = mongoose.connection;
-//     const bucket = new GridFSBucket(conn.db);
-
-//     return new Promise((resolve, reject) => {
-//         bucket.openDownloadStream(fileId)
-//             .on('data', (chunk) => {
-//                 // You might need to accumulate chunks into a Buffer here
-//                 resolve(chunk);
-//             })
-//             .on('error', (err) => {
-//                 reject(err);
-//             });
-//     });
-const getProfilePhoto = async (req, res) => {
-    try {
-        // Fetch user from database by ID
-        const user = await User.findById(req.params.id);
-        
-        // Check if user or profile photo data is missing
-        if (!user || !user.profilePhoto || !user.profilePhoto.data) {
-            return res.status(404).send('Profile photo not found');
-        }
-
-        // Convert binary data to Base64
-        const base64Image = user.profilePhoto.data.toString('base64');
-        
-        // Use content type from the database or default to 'image/jpeg'
-        const contentType = user.profilePhoto.contentType || 'image/jpeg';
-
-        // Send response with Base64 image data and content type
-        res.json({ base64Image, contentType });
-    } catch (error) {
-        console.error('Error fetching profile photo:', error); // Log the error
-        res.status(500).send('Internal server error');
-    }
-};
-
 
 
 
 module.exports = {
     getAllUsers,
-    getUsersByGender,
-    getProfilePhoto
+    getUsersByGender
 }
