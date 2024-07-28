@@ -28,28 +28,41 @@ const Register3 = () => {
     }
   };
 
-  
   const handleRegister3 = async (e) => {
     e.preventDefault();
-
+  
+    // Determine the relationship type based on state
     const relation = shortTerm ? 'Short Term' : longTerm ? 'Long Term' : '';
-
+  
+    // Check if a relationship type is selected
     if (!relation) {
       alert('Please select a relationship type.');
       return;
     }
-
+  
     const form3Data = { relation };
-
-    const accessToken = localStorage.getItem('accessToken'); // Get the token from local storage
-    const accessId = localStorage.getItem('accessId'); // Get the user ID from local storage
-
+  
+    // Retrieve access token and user ID from localStorage
+    const accessToken = localStorage.getItem('accessToken');
+    const accessId = localStorage.getItem('accessId');
+  
+    // Check if user ID is available
+    if (!accessId) {
+      alert('User ID is missing.');
+      return;
+    }
+  
     try {
-      const response = await axios.put('http://localhost:3001/oauth/register3', {
-        ...form3Data,
-        userId: accessId // Include the user ID in the request payload
-      });
-
+      const response = await axios.put(
+        'http://localhost:3001/oauth/register3',
+        { ...form3Data, userId: accessId }, // Include the user ID in the request payload
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}` // Include token in headers for authentication
+          }
+        }
+      );
+  
       if (response.data.message === "Relationship updated successfully") {
         alert(response.data.message);
         navigate('/gender'); // Navigate to the next page
@@ -61,6 +74,7 @@ const Register3 = () => {
       alert('Error occurred while updating relationship details.');
     }
   };
+  
 
   return (
     <>
@@ -88,7 +102,7 @@ const Register3 = () => {
         <Divider />
         <br /><br />
         
-          <Button id='reg-btn' onClick={handleRegister3}>Register</Button>
+          <Button id='reg-btn' style={{marginLeft: '350px'}} onClick={handleRegister3}>Register</Button>
       
       </div>
     </>

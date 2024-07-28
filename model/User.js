@@ -23,23 +23,33 @@ const userSchema= new mongoose.Schema({
     smokingHabits : Boolean,
     drinkingHabits: Boolean,
     isEmployer    : Boolean,
-    jobTitle      : String,
-    companyName   : String,
-    designation   : String,
-    location      : String,
-    isJobseeker   : Boolean,
-    expertiseLevel: {
+    jobTitle: {
         type: String,
-        enum: ['','beginner', 'intermediate', 'expert']
-    },
-    // longTerm      : String,
-    // shortTerm     : Boolean
-    relation       : {
+        default: '' // Default value to handle empty strings
+      },
+      companyName: {
+        type: String,
+        default: '' // Default value to handle empty strings
+      },
+      designation: {
+        type: String,
+        default: '' // Default value to handle empty strings
+      },
+      companyLocation: {
+        type: String,
+        default: '' // Default value to handle empty strings
+      },
+      isJobseeker: Boolean,
+      expertiseLevel: {
+        type: String,
+        enum: ['', 'beginner', 'intermediate', 'expert'], // Include empty string in enum
+        default: '' // Default value to handle empty strings
+      },
+      relation: {
         type: String,
         enum: ['longterm', 'shortterm']
-    }
-           
-},
+      }
+    },
 {timestamps:true})
 
 const userData = mongoose.model('user',userSchema);

@@ -8,11 +8,11 @@ import ListItemText from '@mui/material/ListItemText';
 import Toolbar from '@mui/material/Toolbar';
 import '../../index.css'
 import { Link, useNavigate } from 'react-router-dom';
-import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import HomeIcon from '@mui/icons-material/Home';
 import BookmarkAddOutlinedIcon from '@mui/icons-material/BookmarkAddOutlined';
 import BookmarksOutlinedIcon from '@mui/icons-material/BookmarksOutlined';
-import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
-import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
+import PersonIcon from '@mui/icons-material/Person';
+import ExitToAppSharpIcon from '@mui/icons-material/ExitToAppSharp';
 import { Divider, ListItemIcon } from '@mui/material';
 
 
@@ -25,7 +25,7 @@ function Sidebar() {
   const listData = [{
     page:'Home',
     link:'/userhome',
-    icon:<HomeOutlinedIcon/>
+    icon:<HomeIcon/>
    },
 //    { 
 //     page:'Rent Book',
@@ -40,12 +40,12 @@ function Sidebar() {
    {
     page: 'Profile',
     link:'/profile/:id',
-    icon:<AccountCircleOutlinedIcon/>
+    icon:<PersonIcon/>
     },
     {
     page: 'Signout',
      link: '/',
-     icon:<LogoutOutlinedIcon/>
+     icon:<ExitToAppSharpIcon/>
 }];
   
 const handleLogout = () => {

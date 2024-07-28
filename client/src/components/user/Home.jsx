@@ -77,7 +77,7 @@ const Home = () => {
         <Grid container spacing={1}>
           {users.map((user, i) => (
             <Grid item xs={12} sm={6} md={2} key={i}>
-              <Link to={'/unique'} className='unique-link'>
+              <Link to={`/unique/${user._id}`} className='unique-link'>
               <Card sx={{ maxWidth: 275 , m: 1  }} >
                 <CardHeader
                     style={{

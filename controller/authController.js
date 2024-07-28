@@ -198,66 +198,71 @@ const handleRegister2 = async (req, res) => {
   try {
     const {
       isEmployer,
-      isJobSeeker,
+      isJobseeker,
       companyName,
       designation,
       companyLocation,
+      jobTitle,
       expertiseLevel
     } = req.body;
 
-    // Assume you have some way to get the user's ID, such as from a JWT token or session
-    const userId = req.userId; // This should be set from the authenticated user's context
+    // Ensure req.userId is set correctly (e.g., via authentication middleware)
+    const userId = req.userId;
+    console.log('Request body:', req.body);
+    console.log('User ID:', req.userId);
 
-    // Validate input
     if (!userId) {
       return res.status(400).json({ error: 'User ID is required' });
     }
 
-    // Find the user by ID
-    const user = await User.findById(userId);
-    if (!user) {
+    // Find and update user
+    const updatedUser = await User.findByIdAndUpdate(userId, {
+      isEmployer,
+      isJobseeker,
+      companyName,
+      designation,
+      companyLocation,
+      jobTitle,
+      expertiseLevel
+    }, { new: true });
+
+    if (!updatedUser) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const editUser = await User.findByIdAndUpdate(userId,req.body,{new:true})
-
-    // Save the updated user document
-    await editUser.save();
-
-    return res.status(200).json({ message: 'Employment details updated successfully', editUser });
+    return res.json({ message: 'Employment details updated successfully', user: updatedUser });
   } catch (error) {
     console.error('Error updating employment details:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Error updating employment details' });
   }
 };
-
-const handleRegister3 = async (req,res) =>{
-      
+const handleRegister3 = async (req, res) => {
   try {
-    const  { relation } = req.body; 
+    const { relation, userId } = req.body;
 
-     // Assume you have some way to get the user's ID, such as from a JWT token or session
-     const userId = req.userId; // This should be set from the authenticated user's context
+    // Ensure the user ID is provided
+    if (!userId) {
+      return res.status(400).json({ error: 'User ID is required' });
+    }
 
-     // Validate input
-     if (!userId) {
-       return res.status(400).json({ error: 'User ID is required' });
-     }
- 
-     // Find the user by ID
-     const user = await User.findById(userId);
-     if (!user) {
-       return res.status(404).json({ error: 'User not found' });
-     }
-     const editRelation = await User.findByIdAndUpdate(userId,{relation},{new:true})
-    await editRelation.save();
-    return res.status(200).json({ message: 'Relationship updated successfully', editRelation})
+    // Update the user's relationship status
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { relation },
+      { new: true }
+    );
+
+    // Check if the update was successful
+    if (updatedUser) {
+      res.json({ message: 'Relationship updated successfully', user: updatedUser });
+    } else {
+      res.status(404).json({ error: 'User not found' });
+    }
   } catch (error) {
-    console.error('Error updating relationship: ',error)
-    return res.status(500).json({ error: 'Internal server error' });
-
+    console.error('Error occurred:', error);
+    res.status(500).json({ error: 'Error updating relationship details' });
   }
-}
+};
 
 module.exports = {
   handleSignUp,

@@ -27,10 +27,10 @@ const Register2 = () => {
       setIsEmployer(false);
     }
   };
-
-  const handleRegister2 = async (e) =>{
+  
+  const handleRegister2 = async (e) => {
     e.preventDefault();
-
+  
     const form2Data = {
       isEmployer,
       isJobseeker,
@@ -39,17 +39,27 @@ const Register2 = () => {
       companyLocation,
       jobTitle,
       expertiseLevel
+    };
+  
+    const accessToken = localStorage.getItem('accessToken');
+    const accessId = localStorage.getItem('accessId');
+  
+    if (!accessId) {
+      alert('User ID is missing.');
+      return;
     }
-    
-    const accessToken = localStorage.getItem('accessToken'); // Get the token from local storage
-    const accessId = localStorage.getItem('accessId'); // Get the user ID from local storage
-
-
+  
     try {
-      const response = await axios.put('http://localhost:3001/oauth/register3',{
-        ...form2Data,
-        userId: accessId // Include the user ID in the request payload);
-      })
+      const response = await axios.put(
+        'http://localhost:3001/oauth/register2',
+        form2Data,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        }
+      );
+  
       if (response.data.message === "Employment details updated successfully") {
         alert(response.data.message);
         navigate('/reg3');
@@ -61,7 +71,7 @@ const Register2 = () => {
       alert('Error occurred while updating employment details.');
     }
   };
-
+  
   return (
     <>
     <div>

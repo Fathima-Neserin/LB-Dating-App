@@ -3,6 +3,7 @@ const router=express.Router();
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const verifyJWT = require('../middleware/verifyJWT')
 
 const authController = require('../controller/authController')
 // Directory setup for uploads
@@ -45,10 +46,10 @@ router.route('/signup')
        .post(uploadFields,authController.handleRegister)     
        
  router.route('/register2')
-       .put(authController.handleRegister2)      
+       .put(verifyJWT,authController.handleRegister2)      
 
  router.route('/register3')
-       .put(authController.handleRegister3)
+       .put(verifyJWT,authController.handleRegister3)
 
        
  module.exports=router;     

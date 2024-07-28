@@ -29,7 +29,7 @@ function App() {
     <Route path='/verify-otp' element={<SendOTP/>}/>
     <Route path='/gender' element={<Gender/>}/>
     <Route path='/userhome' element={<Home/>}/>
-    <Route path='/unique' element={<Unique/>}/>
+    <Route path='/unique/:id' element={<Unique/>}/>
     <Route path='/sidebar' element={<Sidebar/>}/>
 
    </Routes>
