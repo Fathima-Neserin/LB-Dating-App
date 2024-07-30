@@ -27,6 +27,33 @@ const Home = () => {
   const [users, setUsers] = useState([]);
   const [loadingPhotos, setLoadingPhotos] = useState(true); // New state for photo loading
   const [profilePhoto, setProfilePhoto] = useState(null);
+  const [searchParams, setSearchParams] = useState({
+    location: '',
+    qualification: '',
+    age: ''
+  });
+  const [filteredUsers, setFilteredUsers] = useState([]);
+
+  const handleSearch = async () => {
+    try {
+      // Construct the query parameters
+      const queryParams = new URLSearchParams({
+        location: searchParams.location || '',
+        qualification: searchParams.qualification || '',
+        age: searchParams.age || '',
+      }).toString();
+      
+      console.log('Query Parameters:', queryParams); // Debugging statement
+      console.log('Search Params:', searchParams);
+
+      
+      const response = await axios.get(`http://localhost:3001/users/search?${queryParams}`);
+      
+      setFilteredUsers(response.data);
+    } catch (error) {
+      console.error('Error occurred while searching users:', error);
+    }
+  };
 
   useEffect(() => {
     const gender = localStorage.getItem('selectedGender') || 'Both';
@@ -70,7 +97,7 @@ const Home = () => {
 
   return (
     <>
-    <div><Topbar/></div>
+    <div><Topbar onSearch={handleSearch}/></div>
      
       <Sidebar/>
       <div className="card-container">

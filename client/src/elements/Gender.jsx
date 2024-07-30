@@ -1,6 +1,6 @@
 import { Button, Typography } from '@mui/material';
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Gender = () => {
   const navigate = useNavigate();
@@ -9,6 +9,29 @@ const Gender = () => {
     localStorage.setItem('selectedGender', gender);
     navigate('/userhome');
   };
+
+  const location = useLocation();
+  const { state } = location;
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const accessToken = urlParams.get('accessToken');
+    const googleId = urlParams.get('googleId');
+
+    if (accessToken && googleId) {
+      // Optionally store tokens or user data in session storage
+      sessionStorage.setItem('accessToken', accessToken);
+      sessionStorage.setItem('googleId', googleId);
+    } else if (state && state.phoneNumber) {
+      // Optionally store phoneNumber or OTP data in session storage
+      sessionStorage.setItem('phoneNumber', state.phoneNumber);
+    }
+
+    // Navigate to dashboard page regardless of authentication method
+    navigate('/gender');
+    
+
+  }, [state, navigate]);
 
   return (
     <div className='gender-page'>

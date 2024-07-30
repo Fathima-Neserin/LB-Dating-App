@@ -14,6 +14,7 @@ import BookmarksOutlinedIcon from '@mui/icons-material/BookmarksOutlined';
 import PersonIcon from '@mui/icons-material/Person';
 import ExitToAppSharpIcon from '@mui/icons-material/ExitToAppSharp';
 import { Divider, ListItemIcon } from '@mui/material';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 
 
 const drawerWidth = 203;
@@ -27,11 +28,11 @@ function Sidebar() {
     link:'/userhome',
     icon:<HomeIcon/>
    },
-//    { 
-//     page:'Rent Book',
-//     link:'/rent',
-//     icon:<BookmarkAddOutlinedIcon/>
-//   },
+   { 
+    page:'Matches',
+    link:'/matches',
+    icon:<FavoriteIcon/>
+  },
 //   {
 //    page:'Rented Books',
 //    link:'/Rented',
@@ -50,9 +51,9 @@ function Sidebar() {
   
 const handleLogout = () => {
   
-  sessionStorage.removeItem('Token');
-  sessionStorage.removeItem('ID');
-  sessionStorage.removeItem('username');
+  localStorage.removeItem('Token');
+  localStorage.removeItem('accessID');
+  localStorage.removeItem('selectedGender');
   // Redirect to login page
     navigate('/');
 
@@ -69,7 +70,7 @@ const handleLogout = () => {
           
           <ListItem key={i} >
             <Link to={val.link} className='side-link' >
-            <ListItemButton className='side-text' onClick={val.page === 'Logout' ? handleLogout : null}>
+            <ListItemButton className='side-text' onClick={val.page === 'Signout' ? handleLogout : null}>
               <ListItemIcon style={{color:'rgb(121, 3, 121)'}}>{val.icon}</ListItemIcon>
               <ListItemText style={{color: 'rgb(121, 3, 121)'}} primary={val.page} />
             </ListItemButton>

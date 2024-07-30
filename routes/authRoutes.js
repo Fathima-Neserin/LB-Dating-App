@@ -12,6 +12,7 @@ if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir);
 }
 
+
 // Multer storage configuration
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -22,8 +23,7 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage: storage });
-
+const upload = multer({ storage: storage })
 
 // Define the fields for Multer
 const uploadFields = upload.fields([

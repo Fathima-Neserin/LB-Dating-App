@@ -1,13 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import { Link } from 'react-router-dom';
+import SearchIcon from '@mui/icons-material/Search';
 import { styled } from '@mui/material/styles';
+import { TextField } from '@mui/material';
+import InputBase from '@mui/material/InputBase';
 
-const Topbar = () => {
+
+const Topbar = ({onSearch}) => {
+
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleSearch = () => {
+    onSearch(searchQuery);
+  };
+
   const TopbarContainer = styled(AppBar)(() => ({
     backgroundColor: 'white',
     color: 'rgb(121, 3, 121)',
@@ -36,6 +50,22 @@ const Topbar = () => {
     },
   }));
 
+  
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+  color: 'rgb(121,3,121)',
+  border:  'solid 1px rgb(121,3,121)',
+  '& .MuiInputBase-input': {
+    padding: theme.spacing(1, 1, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+    transition: theme.transitions.create('width'),
+    width: '100%',
+    [theme.breakpoints.up('md')]: {
+      width: '20ch',
+    },
+  },
+}));
+
   return (
     <Box>
       <TopbarContainer>
@@ -43,12 +73,18 @@ const Topbar = () => {
           <Title variant="h4">
             Dating App
           </Title>
-          <Header>
-            <Button>
-              {/* <LinkStyled to={'/profile'}> <PersonIcon /></LinkStyled>
-              <LinkStyled to={'/'}><ExitToAppIcon/></LinkStyled> */}
+         
+          <StyledInputBase
+              placeholder="Search"
+              inputProps={{ 'aria-label': 'search' }}
+            />
+            <Button onClick={handleSearch} style={{ marginLeft: '10px' }}>
+            <SearchIcon  style={{color: 'rgb(121,3,121)'}}/>
             </Button>
-          </Header>
+           
+             
+          
+         
         </Toolbar>
       </TopbarContainer>
     </Box>

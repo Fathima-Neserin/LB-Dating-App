@@ -88,15 +88,26 @@ const Signup = () => {
     }
 
     try {
+     
       const response = await axios.post(SIGNUP_URL, details);
+     
+      console.log(response.data);
 
-      const accessToken = response?.data?.token;
-      sessionStorage.setItem('Token', accessToken);
+      const { token: accessToken, id: accessID, message } = response.data;
 
+      if (accessToken) {
+        console.log('Storing token:', accessToken);
+        localStorage.setItem('Token', accessToken);
+        console.log('Storing accessID:', accessID);
+        localStorage.setItem('accessID', accessID);
+
+    } else {
+      alert('No token received from server');
+    }
       if (response.data.message === `${details.displayName} signed in successfully`) {
         console.log(response.data.message)
         alert(response.data.message); // Optionally alert the message from backend
-        navigate('/dashboard'); // Navigate to dashboard upon successful signup
+        navigate('/gender'); // Navigate to dashboard upon successful signup
       } else {
         alert('Signup failed');
         navigate('/')
@@ -111,7 +122,7 @@ const Signup = () => {
   return (
     <div className='form-container'>
     <br/>
-    <Typography variant='h6' className='head2'>"Discover love and connections that matter.<br/> Sign in and start your journey to finding that special someone."</Typography>
+    <Typography variant='h6' className='head2'>"Discover love and connections that matter.<br/> Sign in and start your journey to find that special someone."</Typography>
     <br></br>
     <div className='styleform'>
   

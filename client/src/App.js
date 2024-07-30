@@ -3,7 +3,6 @@ import './App.css';
 import { Route, Routes } from 'react-router-dom';
 import Signup from './elements/Signup';
 import Common from './components/Common';
-import Dashboard from './components/user/Dashboard';
 import SendOTP from './elements/SendOTP';
 import MobNo from './elements/MobNo';
 import Register from './elements/Register';
@@ -13,6 +12,8 @@ import Gender from './elements/Gender';
 import Home from './components/user/Home';
 import Unique from './components/user/Unique';
 import Sidebar from './components/user/Sidebar';
+import Profile from './components/user/Profile';
+import Matches from './components/user/Matches';
 
 
 function App() {
@@ -24,13 +25,15 @@ function App() {
     <Route path='/register' element={<Common child={<Register/>}/>} />
     <Route path='/reg2' element={<Register2/>} />
     <Route path='/reg3' element={<Register3/>} />
-    <Route path='/dashboard' element={<Common child={<Dashboard/>}/>} />
     <Route path='/generate-otp' element={<MobNo/>}/>
     <Route path='/verify-otp' element={<SendOTP/>}/>
     <Route path='/gender' element={<Gender/>}/>
     <Route path='/userhome' element={<Home/>}/>
     <Route path='/unique/:id' element={<Unique/>}/>
+    <Route path='/profile/:id' element={<Profile/>}/>
     <Route path='/sidebar' element={<Sidebar/>}/>
+    <Route path='/matches' element={<Matches/>}/>
+
 
    </Routes>
    </>
